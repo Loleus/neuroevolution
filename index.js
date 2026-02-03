@@ -337,7 +337,7 @@ class Agent {
         // Jeśli osiągnął cel: baza + umiarkowany bonus za szybkość
         if (this.reached) {
             // Bazowy wysoki fitness (zostawiamy 10) + speedBonus maksymalnie 2 → max = 12
-            const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT)) * 2.0;
+            const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT)) * 2;
             this.fitness = 10.0 + speedBonus;
             // Opcjonalne drobne rozróżnienie między bardzo szybkimi a umiarkowanymi
             // this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
@@ -349,8 +349,8 @@ class Agent {
         const progressScore = Math.max(0, progress) * 7.0; // skala 0..7
 
         // Mały bonus za przeżycie i eksplorację, ale tak, by nie przekroczyć 10
-        const aliveBonus = this.dead ? 0 : 0.25;
-        const exploreBonus = (this.step / STEP_LIMIT) * 0.15;
+        const aliveBonus = this.dead ? 0 : 0.5;
+        const exploreBonus = (this.step / STEP_LIMIT) * 0.5;
 
         this.fitness = progressScore + aliveBonus + exploreBonus;
 
