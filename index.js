@@ -2369,7 +2369,7 @@ function drawNetworkInfo() {
     ctx.lineWidth = 1;
     ctx.strokeRect(panelX, panelY, panelW, panelH);
     
-    ctx.font = '11px monospace';
+    ctx.font = '11px "Noto Sans"';
     
     ctx.fillStyle = '#f1c40f';
     ctx.fillText(`Gen: ${generation}`, panelX + 4, panelY + 12);
@@ -2388,7 +2388,7 @@ function drawNetworkInfo() {
     
     if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
-        ctx.font = '8px monospace';
+        ctx.font = '8px "Noto Sans"';
         ctx.fillText('W1:', panelX + 4, panelY + 72);
         drawGradientBar(panelX + 22, panelY + 66, 62, 7, avgGradients.W1);
         
