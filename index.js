@@ -1875,7 +1875,7 @@
 // ═══════════════════════════════════════════════════════════════
 // STAŁE GEOMETRYCZNE
 // ═══════════════════════════════════════════════════════════════
-const W = 280, H = 280;
+const W = 320, H = 320;
 const WALL_THICK = 5;
 const START_R = 6;
 const AGENT_R = 3;
@@ -2256,7 +2256,7 @@ class Agent {
         // Miganie przy ostrzeżeniu
         if (this.warningFlash > 0 && this.warningFlash % 4 < 2) {
             ctx.fillStyle = this.warnings >= MAX_WARNINGS - 1 ? '#ff3300' : '#ff6600';
-            ctx.arc(this.x, this.y, this.r + 3, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.r + 1, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
         }
@@ -2265,7 +2265,7 @@ class Agent {
             ctx.fillStyle = '#2ecc71';
             ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         } else if (this.dead) {
-            ctx.fillStyle = '#aa4444';
+            ctx.fillStyle = '#161523';
             ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         } else if (this.isElite) {
             ctx.fillStyle = '#f1c40f';
@@ -2362,14 +2362,14 @@ function drawNetworkInfo() {
     const panelW = 90;
     const panelH = 95;
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
     
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 1;
     ctx.strokeRect(panelX, panelY, panelW, panelH);
     
-    ctx.font = '9px monospace';
+    ctx.font = '11px monospace';
     
     ctx.fillStyle = '#f1c40f';
     ctx.fillText(`Gen: ${generation}`, panelX + 4, panelY + 12);
@@ -2388,7 +2388,7 @@ function drawNetworkInfo() {
     
     if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
-        ctx.font = '7px monospace';
+        ctx.font = '8px monospace';
         ctx.fillText('W1:', panelX + 4, panelY + 72);
         drawGradientBar(panelX + 22, panelY + 66, 62, 7, avgGradients.W1);
         
