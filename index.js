@@ -2389,11 +2389,11 @@ function drawNetworkInfo() {
     if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
         ctx.font = '8px "Noto Sans"';
-        ctx.fillText('W1:', panelX + 4, panelY + 72);
-        drawGradientBar(panelX + 22, panelY + 66, 62, 7, avgGradients.W1);
+        ctx.fillText('W1:', panelX + 4, panelY + 74);
+        drawGradientBar(panelX + 22, panelY + 68, 62, 7, avgGradients.W1);
         
-        ctx.fillText('W2:', panelX + 4, panelY + 84);
-        drawGradientBar(panelX + 22, panelY + 78, 62, 7, avgGradients.W2);
+        ctx.fillText('W2:', panelX + 4, panelY + 86);
+        drawGradientBar(panelX + 22, panelY + 80, 62, 7, avgGradients.W2);
     }
 }
 
