@@ -1894,7 +1894,7 @@ const POP_SIZE = 100;
 let HIDDEN = 8;
 let MUT_RATE = 0.1;
 let ELITE_COUNT = 3;
-let TOUR_SIZE = 5;
+let TOUR_SIZE = 7;
 let TOUR_NO_REPEAT = true;
 
 const STEP_LIMIT = 600;
