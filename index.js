@@ -340,7 +340,7 @@ class Agent {
             const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT)) * 2;
             this.fitness = 10.0 + speedBonus;
             // Opcjonalne drobne rozróżnienie między bardzo szybkimi a umiarkowanymi
-            // this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
+            this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
             return this.fitness;
         }
 
