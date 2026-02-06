@@ -347,7 +347,7 @@ class Agent {
 
     computeFitness() {
         if (this.reached) {
-            const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT)) * 2;
+            const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT));
             this.fitness = 10.0 + speedBonus;
             this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
             return this.fitness;
@@ -361,7 +361,7 @@ class Agent {
         const survivalBonus = this.warnings < MAX_WARNINGS ? 0.3 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
 
         this.fitness = progressScore + aliveBonus + exploreBonus + survivalBonus;
-        this.fitness = Math.min(this.fitness, 9.99);
+        this.fitness = Math.min(this.fitness, 9.90);
 
         return this.fitness;
     }
