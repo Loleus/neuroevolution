@@ -157,42 +157,42 @@ class Net {
             this.W2 = weights.W2;
             this.b2 = weights.b2;
         } else {
-            const scale1 = Math.sqrt(2.0 / (inDim + hiddenDim));
-            const scale2 = Math.sqrt(2.0 / (hiddenDim + outDim));
+            const r = 3.0;
+            const init = () => (Math.random() * 2 - 1) * r;
 
             this.W1 = Array.from({ length: hiddenDim }, () =>
-                Array.from({ length: inDim }, () => randn() * scale1)
+                Array.from({ length: inDim }, init)
             );
-            this.b1 = Array.from({ length: hiddenDim }, () => 0);
+            this.b1 = Array.from({ length: hiddenDim }, init);
 
             this.W2 = Array.from({ length: outDim }, () =>
-                Array.from({ length: hiddenDim }, () => randn() * scale2)
+                Array.from({ length: hiddenDim }, init)
             );
-            this.b2 = Array.from({ length: outDim }, () => 0);
+            this.b2 = Array.from({ length: outDim }, init);
         }
     }
 
-    forward(x) {
-        const h = new Array(this.hiddenDim);
-        for (let i = 0; i < this.hiddenDim; i++) {
-            let sum = this.b1[i];
-            for (let j = 0; j < this.inDim; j++) {
-                sum += this.W1[i][j] * x[j];
-            }
-            h[i] = sum > 0 ? sum : 0;
+forward(x) {
+    const h = new Array(this.hiddenDim);
+    for (let i = 0; i < this.hiddenDim; i++) {
+        let sum = this.b1[i];
+        for (let j = 0; j < this.inDim; j++) {
+            sum += this.W1[i][j] * x[j];
         }
-
-        const y = new Array(this.outDim);
-        for (let i = 0; i < this.outDim; i++) {
-            let sum = this.b2[i];
-            for (let j = 0; j < this.hiddenDim; j++) {
-                sum += this.W2[i][j] * h[j];
-            }
-            y[i] = Math.tanh(sum);
-        }
-
-        return y;
+        // Leaky ReLU: zapobiega drgawkom i zamrażaniu neuronów
+        h[i] = sum > 0 ? sum : sum * 0.01;
     }
+
+    const y = new Array(this.outDim);
+    for (let i = 0; i < this.outDim; i++) {
+        let sum = this.b2[i];
+        for (let j = 0; j < this.hiddenDim; j++) {
+            sum += this.W2[i][j] * h[j];
+        }
+        y[i] = Math.tanh(sum);
+    }
+    return y;
+}
 
     copyWeights() {
         return {
@@ -344,26 +344,38 @@ class Agent {
         }
     }
 
-    computeFitness() {
-        if (this.reached) {
-            const speedBonus = Math.max(0, 1 - (this.step / STEP_LIMIT)) * 2;
-            this.fitness = 10.0 + speedBonus;
-            this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
-            return this.fitness;
-        }
-
-        const progress = 1 - (this.minDist / START_TO_GOAL_DIST);
-        const progressScore = Math.max(0, progress) * 7.0;
-
-        const aliveBonus = this.dead ? 0 : 0.5;
-        const exploreBonus = (this.step / STEP_LIMIT) * 0.5;
-        const survivalBonus = this.warnings < MAX_WARNINGS ? 0.3 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
-
-        this.fitness = progressScore + aliveBonus + exploreBonus + survivalBonus;
-        this.fitness = Math.min(this.fitness, 9.99);
-
-        return this.fitness;
+computeFitness() {
+    const progress = 1 - (this.minDist / START_TO_GOAL_DIST);
+    
+    // SCENARIUSZ A: Agent dotarł do celu
+    if (this.reached) {
+        // Podstawa to 9.8, a pozostały czas (im krótszy, tym lepiej) dobija do 10.0
+        const timeBonus = (1 - (this.step / STEP_LIMIT)) * 0.2;
+        this.fitness = 9.8 + timeBonus; 
+        return this.fitness; // Zwróci od 9.8 do 10.0
     }
+
+    // SCENARIUSZ B: Agent nie dotarł do celu
+    // Skalujemy progres tak, aby max wyniósł 9.5 (zostawiając miejsce dla reached)
+    let progressScore = Math.max(0, progress) * 9.5;
+
+    // KRYTYCZNA POPRAWKA: Kara za śmierć tuż przed metą
+    // Jeśli agent walnie w ścianę mając > 85% progresu, jego wynik spada do poziomu 1.0
+    // Dzięki temu ewolucja "wyrzuci do śmieci" agentów, którzy nie potrafią wyhamować przed metą.
+    if (this.dead && progress > 0.85) {
+        progressScore = 1.0 * progress; 
+    }
+
+    // Bonus za życie (tylko jeśli nie dotarł, żeby premiować tych co jeszcze walczą)
+    const aliveBonus = (!this.dead && !this.reached) ? 0.1 : 0;
+
+    this.fitness = progressScore + aliveBonus;
+
+    // Clamp: Nie pozwalamy przekroczyć 9.79, żeby nie zrównać się z "reached"
+    if (this.fitness > 9.79) this.fitness = 9.79;
+
+    return this.fitness;
+}
 
     draw() {
         // Ścieżka elity
@@ -635,13 +647,17 @@ function crossoverWeights(w1, w2) {
 }
 
 function mutateWeights(w) {
-    const mutationStrength = 0.2;
+    const mutationStrength = 0.5; 
+
+    function clamp(val) {
+        return Math.max(-3, Math.min(3, val));
+    }
 
     function mutMatrix(M) {
         for (let i = 0; i < M.length; i++) {
             for (let j = 0; j < M[i].length; j++) {
                 if (Math.random() < MUT_RATE) {
-                    M[i][j] += randn() * mutationStrength;
+                    M[i][j] = clamp(M[i][j] + randn() * mutationStrength);
                 }
             }
         }
@@ -650,7 +666,7 @@ function mutateWeights(w) {
     function mutVector(v) {
         for (let i = 0; i < v.length; i++) {
             if (Math.random() < MUT_RATE) {
-                v[i] += randn() * mutationStrength;
+                v[i] = clamp(v[i] + randn() * mutationStrength);
             }
         }
     }
