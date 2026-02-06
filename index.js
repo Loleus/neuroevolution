@@ -350,8 +350,8 @@ computeFitness() {
     // SCENARIUSZ A: Agent dotarł do celu
     if (this.reached) {
         // Podstawa to 9.8, a pozostały czas (im krótszy, tym lepiej) dobija do 10.0
-        const timeBonus = (1 - (this.step / STEP_LIMIT)) * 0.2;
-        this.fitness = 9.8 + timeBonus; 
+        const timeBonus = (1 - (this.step / STEP_LIMIT)) * 0.22;
+        this.fitness = 9.93 + timeBonus; 
         return this.fitness; // Zwróci od 9.8 do 10.0
     }
 
@@ -525,19 +525,21 @@ function drawNetworkInfo() {
     ctx.fillStyle = '#e74c3c';
     ctx.fillText(`Best: ${generationStats.maxFitness.toFixed(2)}`, panelX + 4, panelY + 60);
     
-    if (avgGradients.W1 !== null) {
+ if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
         ctx.font = '8px "Noto Sans"';
-        ctx.fillText('W1:', panelX + 4, panelY + 74);
-        drawGradientBar(panelX + 22, panelY + 68, 62, 7, avgGradients.W1);
         
-        ctx.fillText('W2:', panelX + 4, panelY + 86);
-        drawGradientBar(panelX + 22, panelY + 80, 62, 7, avgGradients.W2);
+        // Pokaż liczbowo + pasek
+        ctx.fillText(`W1: ${avgGradients.W1.toFixed(2)}`, panelX + 4, panelY + 74);
+        drawGradientBar(panelX + 40, panelY + 68, 44, 7, avgGradients.W1);
+        
+        ctx.fillText(`W2: ${avgGradients.W2.toFixed(2)}`, panelX + 4, panelY + 86);
+        drawGradientBar(panelX + 40, panelY + 80, 44, 7, avgGradients.W2);
     }
 }
 
 function drawGradientBar(x, y, w, h, magnitude) {
-    const norm = Math.min(1, magnitude / 2);
+    const norm = Math.min(1, magnitude / 3);
     
     ctx.fillStyle = 'rgba(50, 50, 50, 0.8)';
     ctx.fillRect(x, y, w, h);
