@@ -286,7 +286,7 @@ class Agent {
         if (collides(nx, ny, this.r)) {
             // Okres ochronny na starcie
             if (this.step < GRACE_PERIOD) {
-                const safeRadius = 18;
+                const safeRadius = 8;
                 for (let attempts = 0; attempts < 10; attempts++) {
                     const newX = start.x + (Math.random() - 0.5) * safeRadius;
                     const newY = start.y + (Math.random() - 0.5) * safeRadius;
@@ -636,7 +636,7 @@ function crossoverWeights(w1, w2) {
 }
 
 function mutateWeights(w) {
-    const mutationStrength = 0.2;
+    const mutationStrength = 0.3;
 
     function mutMatrix(M) {
         for (let i = 0; i < M.length; i++) {
@@ -797,8 +797,5 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// START
-// ═══════════════════════════════════════════════════════════════
 resetPopulation();
 loop();
