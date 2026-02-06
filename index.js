@@ -352,17 +352,25 @@ class Agent {
             this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
             return this.fitness;
         }
-
-        const progress = 1 - (this.minDist / START_TO_GOAL_DIST);
-        const progressScore = Math.max(0, progress) * 7.0;
-
-        const aliveBonus = this.dead ? 0 : 0.5;
-        const exploreBonus = (this.step / STEP_LIMIT) * 0.5;
-        const survivalBonus = this.warnings < MAX_WARNINGS ? 0.3 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
-
-        this.fitness = progressScore + aliveBonus + exploreBonus + survivalBonus;
+    
+        const currentDist = Math.hypot(this.x - goal.x, this.y - goal.y);
+        const bestProgress = 1 - (this.minDist / START_TO_GOAL_DIST);
+        const currentProgress = 1 - (currentDist / START_TO_GOAL_DIST);
+        
+        // Ważona kombinacja: 60% najlepsza, 40% aktualna
+        const progress = bestProgress * 0.6 + currentProgress * 0.4;
+        const progressScore = Math.max(0, progress) * 8.0;
+    
+        const aliveBonus = this.dead ? 0 : 0.3;
+        const exploreBonus = progress * (this.step / STEP_LIMIT) * 0.2;
+        const survivalBonus = this.warnings < MAX_WARNINGS ? 0.2 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
+        
+        // WAŻNE: Bonus za bycie blisko celu w końcowej fazie (zachęca do dalszego ruchu)
+        const proximityBonus = currentProgress > 0.5 ? (currentProgress - 0.5) * 3.0 : 0;
+    
+        this.fitness = progressScore + aliveBonus + exploreBonus + survivalBonus + proximityBonus;
         this.fitness = Math.min(this.fitness, 9.90);
-
+    
         return this.fitness;
     }
 
@@ -635,14 +643,19 @@ function crossoverWeights(w1, w2) {
     };
 }
 
-function mutateWeights(w) {
-    const mutationStrength = 0.3;
-
+function mutateWeights(w, multiplier = 1.) {
+    const baseStrength = 0.3;
+    const decayFactor = Math.exp(-generation / 200);
+    const minStrength = 0.1;
+    const baseMutationStrength = Math.max(minStrength, baseStrength * decayFactor * multiplier);
+    
     function mutMatrix(M) {
         for (let i = 0; i < M.length; i++) {
             for (let j = 0; j < M[i].length; j++) {
                 if (Math.random() < MUT_RATE) {
-                    M[i][j] += randn() * mutationStrength;
+                    // Względna mutacja: 30% aktualnej wartości + mała stała
+                    const relativeStrength = Math.abs(M[i][j]) * 0.3 + 0.05;
+                    M[i][j] += randn() * relativeStrength * baseMutationStrength;
                 }
             }
         }
@@ -651,7 +664,8 @@ function mutateWeights(w) {
     function mutVector(v) {
         for (let i = 0; i < v.length; i++) {
             if (Math.random() < MUT_RATE) {
-                v[i] += randn() * mutationStrength;
+                const relativeStrength = Math.abs(v[i]) * 0.3 + 0.05;
+                v[i] += randn() * relativeStrength * baseMutationStrength;
             }
         }
     }
@@ -709,7 +723,7 @@ function evolve() {
     const sorted = [...population].sort((a, b) => b.fitness - a.fitness);
     const nextGen = [];
 
-    const eliteCount = Math.min(ELITE_COUNT, sorted.length);
+    const eliteCount = generation > 50 ? Math.max(1, Math.floor(ELITE_COUNT * 0.7)) : ELITE_COUNT;
     
     elitePaths = [];
     for (let i = 0; i < eliteCount; i++) {
@@ -726,7 +740,7 @@ function evolve() {
         eliteAgent.isElite = true;
         nextGen.push(eliteAgent);
     }
-
+    const stagnationFactor = bestFitness < 6.0 && generation > 30 ? 1.8 : 1.0;
     while (nextGen.length < POP_SIZE) {
         const parent1 = pickTournament(population);
         const parent2 = pickTournament(population);
@@ -736,7 +750,7 @@ function evolve() {
             parent2.net.copyWeights()
         );
 
-        mutateWeights(childWeights);
+        mutateWeights(childWeights, stagnationFactor);
         nextGen.push(new Agent(new Net(6, HIDDEN, 2, childWeights)));
     }
 
