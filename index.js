@@ -649,31 +649,67 @@ function mutateWeights(w, multiplier = 1.) {
     const minStrength = 0.1;
     const baseMutationStrength = Math.max(minStrength, baseStrength * decayFactor * multiplier);
     
-    function mutMatrix(M) {
+    // Oblicz średnie wartości bezwzględne wag dla każdej warstwy
+    let sumW1 = 0, countW1 = 0;
+    let sumW2 = 0, countW2 = 0;
+    let sumB1 = 0, countB1 = 0;
+    let sumB2 = 0, countB2 = 0;
+    
+    for (let i = 0; i < w.W1.length; i++) {
+        for (let j = 0; j < w.W1[i].length; j++) {
+            sumW1 += Math.abs(w.W1[i][j]);
+            countW1++;
+        }
+    }
+    for (let i = 0; i < w.W2.length; i++) {
+        for (let j = 0; j < w.W2[i].length; j++) {
+            sumW2 += Math.abs(w.W2[i][j]);
+            countW2++;
+        }
+    }
+    for (let i = 0; i < w.b1.length; i++) {
+        sumB1 += Math.abs(w.b1[i]);
+        countB1++;
+    }
+    for (let i = 0; i < w.b2.length; i++) {
+        sumB2 += Math.abs(w.b2[i]);
+        countB2++;
+    }
+    
+    const avgW1 = sumW1 / countW1 || 0.38; // fallback do wartości początkowej
+    const avgW2 = sumW2 / countW2 || 0.45;
+    const avgB1 = sumB1 / countB1 || 0.0;
+    const avgB2 = sumB2 / countB2 || 0.0;
+    
+    // Normalizacja mutacji względem średniej wartości warstwy
+    const normW1 = baseMutationStrength * (avgW1 / 0.4); // 0.4 to referencyjna średnia
+    const normW2 = baseMutationStrength * (avgW2 / 0.4);
+    const normB1 = baseMutationStrength * (Math.max(avgB1, 0.1) / 0.1);
+    const normB2 = baseMutationStrength * (Math.max(avgB2, 0.1) / 0.1);
+    
+    function mutMatrix(M, normalizedStrength) {
         for (let i = 0; i < M.length; i++) {
             for (let j = 0; j < M[i].length; j++) {
                 if (Math.random() < MUT_RATE) {
-                    // Względna mutacja: 30% aktualnej wartości + mała stała
-                    const relativeStrength = Math.abs(M[i][j]) * 0.3 + 0.05;
-                    M[i][j] += randn() * relativeStrength * baseMutationStrength;
+                    // Bezwzględna mutacja znormalizowana względem średniej warstwy
+                    M[i][j] += randn() * normalizedStrength;
                 }
             }
         }
     }
 
-    function mutVector(v) {
+    function mutVector(v, normalizedStrength) {
         for (let i = 0; i < v.length; i++) {
             if (Math.random() < MUT_RATE) {
-                const relativeStrength = Math.abs(v[i]) * 0.3 + 0.05;
-                v[i] += randn() * relativeStrength * baseMutationStrength;
+                v[i] += randn() * normalizedStrength;
             }
         }
     }
 
-    mutMatrix(w.W1);
-    mutVector(w.b1);
-    mutMatrix(w.W2);
-    mutVector(w.b2);
+    mutMatrix(w.W1, normW1);
+    mutVector(w.b1, normB1);
+    mutMatrix(w.W2, normW2);
+    mutVector(w.b2, normB2);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -736,6 +772,11 @@ function evolve() {
 
     for (let i = 0; i < eliteCount; i++) {
         const weights = sorted[i].net.copyWeights();
+        if (sorted[i].fitness > 9.0 && !sorted[i].reached) {
+            // Mała mutacja elity (5% normalnej siły) - tylko dla eksploracji
+            const eliteMutationStrength = 0.05; // 5% normalnej mutacji
+            mutateWeights(weights, eliteMutationStrength / 0.3); // Przeskaluj do odpowiedniej wartości
+        }
         const eliteAgent = new Agent(new Net(6, HIDDEN, 2, weights));
         eliteAgent.isElite = true;
         nextGen.push(eliteAgent);
