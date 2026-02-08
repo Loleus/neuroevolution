@@ -1,5 +1,3 @@
-
-
 // ═══════════════════════════════════════════════════════════════
 // STAŁE GEOMETRYCZNE
 // ═══════════════════════════════════════════════════════════════
@@ -253,8 +251,6 @@ class Agent {
         this.net = net || new Net();
         this.fitness = 0;
         this.minDist = START_TO_GOAL_DIST;
-        
-        // NOWE POLA
         this.warnings = 0;
         this.warningFlash = 0;
         this.path = [];
@@ -356,7 +352,6 @@ class Agent {
         const currentDist = Math.hypot(this.x - goal.x, this.y - goal.y);
         const bestProgress = 1 - (this.minDist / START_TO_GOAL_DIST);
         const currentProgress = 1 - (currentDist / START_TO_GOAL_DIST);
-        
         // Ważona kombinacja: 60% najlepsza, 40% aktualna
         const progress = bestProgress * 0.6 + currentProgress * 0.4;
         const progressScore = Math.max(0, progress) * 8.0;
@@ -364,7 +359,6 @@ class Agent {
         const aliveBonus = this.dead ? 0 : 0.3;
         const exploreBonus = progress * (this.step / STEP_LIMIT) * 0.2;
         const survivalBonus = this.warnings < MAX_WARNINGS ? 0.2 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
-        
         // WAŻNE: Bonus za bycie blisko celu w końcowej fazie (zachęca do dalszego ruchu)
         const proximityBonus = currentProgress > 0.5 ? (currentProgress - 0.5) * 3.0 : 0;
     
