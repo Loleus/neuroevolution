@@ -13,12 +13,13 @@
     <div id="controls">
 
         <h3>Neuroewolucja</h3>
+        <canvas id="hist" width="280" height="96"></canvas>
         <div class="hist">
+            
             <span class="pill">Populacja<br><b id="pop"></b></span>
             <span class="pill">Generacja<br><b id="gen">0</b></span>
             <span class="pill">Fitness<br><b id="best">0.000</b></span>
         </div>
-
         <div class="params">
 
             <div class="param-line">
@@ -56,7 +57,7 @@
             <button id="restart">Restart</button>
             <button id="pause">Pauza</button>
         </div>
-        <canvas id="hist" width="280" height="96"></canvas>
+
         <!-- <p id="desc">
             Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
             poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
