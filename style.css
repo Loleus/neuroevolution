@@ -1,196 +1,205 @@
      /* === CZCIONKA === */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+     * {
+         box-sizing: border-box;
+         margin: 0;
+         padding: 0;
+     }
 
-        /* === ZMIENNE === */
-        :root {
-            --color-bg-panel: #0b192b;
-            --color-bg-gradient-1: #0b0a2d;
-            --color-bg-gradient-2: #1b375c;
-            --color-text-main: #eee;
-            --color-text-green: #1ccf00;
-            --color-text-yellow: #ecd53f;
-            --color-text-gray: #d0d0d0;
-            --color-border: #2f61d5;
-            --color-button: #b90000;
-            --color-button-hover: #ff5858;
-            --color-shadow: rgba(0, 0, 0, 0.6);
-            --shadow-big-blur: 12px;
-            --shadow-medium: 0 0 var(--shadow-big-blur) var(--color-shadow);
-            --shadow-soft: 1px 1px 2px var(--color-shadow);
-            --radius: 10px;
+     /* === ZMIENNE === */
+     :root {
+         --color-bg-panel: #0b192b;
+         --color-bg-gradient-1: #0b0a2d;
+         --color-bg-gradient-2: #1b375c;
+         --color-text-main: #eee;
+         --color-text-green: #1ccf00;
+         --color-text-yellow: #ecd53f;
+         --color-text-gray: #d0d0d0;
+         --color-border: #2f61d5;
+         --color-button: #b90000;
+         --color-button-hover: #ff5858;
+         --color-shadow: rgba(0, 0, 0, 0.6);
+         --shadow-big-blur: 12px;
+         --shadow-medium: 0 0 var(--shadow-big-blur) var(--color-shadow);
+         --shadow-soft: 1px 1px 2px var(--color-shadow);
+         --radius: 10px;
 
-        }
+     }
 
-        /* === LAYOUT: PANEL LEWO, CANVAS PRAWO === */
-        body {
-            display: flex;
-            overflow: auto;
-            min-height: 100vh;
-            flex-direction: row;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 14px;
-            font-family: "Noto Sans", system-ui, sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            font-size: 14px;
-            color: var(--color-text-main);
-            background-image: linear-gradient(45deg, var(--color-bg-gradient-1), var(--color-bg-gradient-2) 50%, var(--color-bg-gradient-1) 100%);
-        }
+     /* === LAYOUT: PANEL LEWO, CANVAS PRAWO === */
+     body {
+         display: flex;
+         overflow: auto;
+         min-height: 100vh;
+         flex-direction: row;
+         justify-content: center;
+         align-items: flex-start;
+         gap: 10px;
+         padding: 14px;
+         font-family: "Noto Sans", system-ui, sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+         font-size: 14px;
+         color: var(--color-text-main);
+         background-image: linear-gradient(45deg, var(--color-bg-gradient-1), var(--color-bg-gradient-2) 50%, var(--color-bg-gradient-1) 100%);
+     }
 
-        /* === PANEL === */
-        #controls {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            min-width: 320px;
-            width: 320px;
-            background: var(--color-bg-panel);
-            padding: 12px var(--radius);
-            border-radius: var(--radius);
-            border: 1px solid var(--color-border);
-            box-shadow: var(--shadow-medium);
-            overflow: auto;
-            line-height: 1.5;
-            max-height: calc(100vh - 28px);
-        }
+     /* === PANEL === */
+     #controls {
+         display: flex;
+         flex-direction: column;
+         justify-content: flex-start;
+         min-width: 320px;
+         width: 320px;
+         background: var(--color-bg-panel);
+         padding: 12px var(--radius);
+         border-radius: var(--radius);
+         border: 1px solid var(--color-border);
+         box-shadow: var(--shadow-medium);
+         overflow: auto;
+         line-height: 1.5;
+         max-height: calc(100vh - 28px);
+     }
 
-        #controls h3 {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--color-text-main);
-            text-shadow: 0 0 var(--shadow-big-blur) var(--color-border);
-        }
+     #controls h3 {
+         text-align: center;
+         font-size: 18px;
+         font-weight: 700;
+         color: var(--color-text-main);
+         text-shadow: 0 0 var(--shadow-big-blur) var(--color-border);
+     }
 
-        /* === STATYSTYKI === */
+     /* === STATYSTYKI === */
 
-        .hist {
-            display: flex;
-            display: none;
-            width: 100%;
-            justify-content: space-around;
-            margin: 0 0 10px;
-        }
+     .hist {
+         display: flex;
+         display: none;
+         width: 100%;
+         justify-content: space-around;
+         margin: 0 0 10px;
+     }
 
-        .hist .pill {
-            width: 32%;
-            padding: 3px 10px 6px;
-            text-align: center;
-            border: 1px solid var(--color-border);
-            background: var(--color-bg-panel);
-            text-shadow: var(--shadow-soft);
-            box-shadow: none;
-            border-radius: var(--radius);
-        }
+     .hist .pill {
+         width: 32%;
+         padding: 3px 10px 6px;
+         text-align: center;
+         border: 1px solid var(--color-border);
+         background: var(--color-bg-panel);
+         text-shadow: var(--shadow-soft);
+         box-shadow: none;
+         border-radius: var(--radius);
+     }
 
-        .pill b {
-            display: inline-block;
-            min-width: 30px;
-            font-weight: 700;
-        }
+     .pill b {
+         display: inline-block;
+         min-width: 30px;
+         font-weight: 700;
+     }
 
-        .pill #best {
-            color: var(--color-text-green);
-        }
+     .pill #best {
+         color: var(--color-text-green);
+     }
 
-        .pill #pop {
-            color: var(--color-text-yellow);
-        }
+     .pill #pop {
+         color: var(--color-text-yellow);
+     }
 
-        .pill #gen {
-            color: var(--color-text-gray);
-        }
+     .pill #gen {
+         color: var(--color-text-gray);
+     }
 
-        /* === PARAMETRY === */
-        .params {
-            background: var(--color-bg-panel);
-            padding: 10px var(--radius);
-            margin: 0 0 10px;
-        }
+     /* === PARAMETRY === */
+     .params {
+         background: var(--color-bg-panel);
+         padding: 10px var(--radius);
+         margin: 0 0 10px;
+     }
 
-        .param-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 4px 0 4px;
-        }
+     .param-line {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin: 4px 0 4px;
+     }
 
-        label {
-            color: var(--color-text-gray);
-        }
+     label {
+         color: var(--color-text-gray);
+     }
 
-        input[type=range] {
-            width: 100%;
-            margin-bottom: 6px;
-            line-height: 1.5;
-        }
+     input[type=range] {
+         width: 100%;
+         margin-bottom: 6px;
+         line-height: 1.5;
+     }
 
-        .buttons {
-            display: flex;
-            width: 100%;
-            justify-content: space-around;
-        }
+     .buttons {
+         display: flex;
+         width: 100%;
+         justify-content: space-around;
+     }
 
-        button {
-            border: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            color: var(--color-text-main);
-            border-radius: var(--radius);
-            text-shadow: var(--shadow-soft);
-            box-shadow: var(--shadow-medium);
-            padding: 5px 18px 8px;
-            background: var(--color-button);
-        }
+     button {
+         border: none;
+         transition: all 0.2s;
+         cursor: pointer;
+         color: var(--color-text-main);
+         border-radius: var(--radius);
+         text-shadow: var(--shadow-soft);
+         box-shadow: var(--shadow-medium);
+         padding: 5px 18px 8px;
+         background: var(--color-button);
+     }
 
-        button:hover {
-            background: var(--color-button-hover);
-        }
+     button:hover {
+         background: var(--color-button-hover);
+     }
 
-        /* === OPIS === */
-        #desc {
-            margin-top: 18px;
-            padding: 10px;
-            background: var(--color-bg-gradient-2);
-            border-radius: var(--radius);
-            border: 1px solid var(--color-border);
-            color: var(--color-text-gray);
-            text-align: justify;
-            line-height: 1.4;
-            /* text-indent: 18px; */
-            box-shadow: var(--shadow-medium);
-        }
+     /* === OPIS === */
+     #desc {
+         margin-top: 18px;
+         padding: 10px;
+         background: var(--color-bg-gradient-2);
+         border-radius: var(--radius);
+         border: 1px solid var(--color-border);
+         color: var(--color-text-gray);
+         text-align: justify;
+         line-height: 1.4;
+         /* text-indent: 18px; */
+         box-shadow: var(--shadow-medium);
+     }
 
-        /* === CANVAS === */
-        #cv {
-            width: 512px;
-            height: 512px;
-            background: var(--color-bg-panel);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-medium);
-        }
+     /* === CANVAS === */
+     #cv {
+         width: 512px;
+         height: 512px;
+         background: var(--color-bg-panel);
+         border-radius: var(--radius);
+         box-shadow: var(--shadow-medium);
+     }
 
-        /* === RESPONSYWNOŚĆ === */
-        @media screen and (max-width: 799px) {
-            body {
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-            }
-            #controls {
-                min-width: 100vw;
-                max-width: 720px;
-            }
+     #hist {
+         margin-top: 11px;
+         height: 96px;
+         padding: 0 5px;
+         border: 1px solid var(--color-border);
+         border-radius: var(--radius);
+        box-shadow: var(--shadow-medium);
+     }
 
-            #cv {
-                width: 100vw;
-                height: 100vw;
-            }
-        }
-        
+     /* === RESPONSYWNOŚĆ === */
+     @media screen and (max-width: 799px) {
+         body {
+             flex-direction: column;
+             align-items: center;
+             width: 100%;
+         }
+
+         #controls {
+             min-width: 100vw;
+             max-width: 720px;
+         }
+
+         #cv {
+             width: 100vw;
+             height: 100vw;
+         }
+     }

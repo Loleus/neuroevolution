@@ -62,6 +62,8 @@ const btnPause = document.getElementById('pause');
 const tourSizeEl = document.getElementById('tourSize');
 const tourSizeValEl = document.getElementById('tourSizeVal');
 const tourNoRepeatEl = document.getElementById('tourNoRepeat');
+const histCanvas = document.getElementById('hist');
+const hctx = histCanvas ? histCanvas.getContext('2d') : null;
 
 popEl.textContent = POP_SIZE;
 
