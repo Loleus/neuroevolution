@@ -556,6 +556,63 @@ function drawGradientBar(x, y, w, h, magnitude) {
     ctx.strokeRect(x, y, w, h);
 }
 
+// ═══════════════════════════════════════════════════════════════
+// HISTOGRAM ROZKŁADU FITNESS
+// ═══════════════════════════════════════════════════════════════
+function drawFitnessHistogram(pop) {
+    if (!hctx || !histCanvas) return;
+
+    const bins = 20;
+    const counts = new Array(bins).fill(0);
+
+    let minF = Infinity, maxF = -Infinity;
+    for (const a of pop) {
+        const v = a.fitness;
+        if (v < minF) minF = v;
+        if (v > maxF) maxF = v;
+    }
+
+    const range = Math.max(1e-8, maxF - minF);
+    for (const a of pop) {
+        const norm = (a.fitness - minF) / range;
+        const v = Math.max(0, Math.min(1, norm));
+        let idx = Math.floor(v * bins);
+        if (idx >= bins) idx = bins - 1;
+        counts[idx]++;
+    }
+
+    const cw = histCanvas.width, ch = histCanvas.height;
+    hctx.clearRect(0, 0, cw, ch);
+
+    hctx.fillStyle = '#0b192b';
+    hctx.fillRect(0, 0, cw, ch);
+
+    const maxC = Math.max(1, ...counts);
+    const barW = cw / bins;
+
+    const gradient = hctx.createLinearGradient(0, 20, 0, ch - 20);
+    gradient.addColorStop(0, '#22cd00');
+    gradient.addColorStop(1, '#0060df');
+
+    for (let i = 0; i < bins; i++) {
+        const h = (counts[i] / maxC) * (ch - 40);
+        const x = i * barW;
+        const y = (ch - 20) - h;
+        hctx.fillStyle = gradient;
+        hctx.fillRect(x + 1, y, Math.max(1, barW - 2), h);
+    }
+
+    hctx.fillStyle = '#fff';
+    hctx.font = '11px sans-serif';
+    hctx.textAlign = 'center';
+    hctx.fillText('Rozkład fitness', cw / 2, 12);
+    hctx.font = '9px sans-serif';
+    const fmt = v => (v === 0 || Object.is(v, -0) ? 0 : v).toFixed(1);
+    hctx.fillText(fmt(minF), barW * 0.5, ch - 4);
+    hctx.fillText(fmt((minF + maxF) / 2), cw / 2, ch - 4);
+    hctx.fillText(fmt(maxF), cw - barW * 0.6, ch - 4);
+}
+
 function computeAverageGradients(eliteAgents) {
     if (eliteAgents.length === 0) return;
     
@@ -721,6 +778,11 @@ function resetPopulation(hard = false) {
         elitePaths = [];
         avgGradients = { W1: null, W2: null };
         generationStats = { avgFitness: 0, maxFitness: 0, aliveCount: POP_SIZE, reachedCount: 0 };
+        if (hctx && histCanvas) {
+            hctx.clearRect(0, 0, histCanvas.width, histCanvas.height);
+            hctx.fillStyle = '#0b192b';
+            hctx.fillRect(0, 0, histCanvas.width, histCanvas.height);
+        }
     }
     population = Array.from({ length: POP_SIZE }, () => new Agent(new Net(6, HIDDEN, 2)));
     bestFitness = 0;
@@ -751,6 +813,8 @@ function evolve() {
         aliveCount: aliveCount,
         reachedCount: reachedCount
     };
+
+    drawFitnessHistogram(population);
 
     const sorted = [...population].sort((a, b) => b.fitness - a.fitness);
     const nextGen = [];
