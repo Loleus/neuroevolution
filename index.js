@@ -788,6 +788,9 @@ function resetPopulation(hard = false) {
     bestFitness = 0;
     genEl.textContent = generation;
     bestEl.textContent = bestFitness.toFixed(3);
+    if (hctx && histCanvas) {
+        drawFitnessHistogram(population);
+    }
 }
 
 function evolve() {
