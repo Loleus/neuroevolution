@@ -698,7 +698,7 @@ function crossoverWeights(w1, w2) {
 
 function mutateWeights(w, multiplier = 1.) {
     const baseStrength = 0.3;
-    const decayFactor = Math.exp(-generation / 200);
+    const decayFactor = Math.exp(-generation / 500);
     const minStrength = 0.1;
     const baseMutationStrength = Math.max(minStrength, baseStrength * decayFactor * multiplier);
     
