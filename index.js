@@ -492,7 +492,7 @@ function drawNetworkInfo() {
     const panelX = 5;
     const panelY = 5;
     const panelW = 90;
-    const panelH = 95;
+    const panelH = 58;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
@@ -502,30 +502,19 @@ function drawNetworkInfo() {
     ctx.strokeRect(panelX, panelY, panelW, panelH);
     
     ctx.font = '11px "Noto Sans"';
-    
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillText(`Gen: ${generation}`, panelX + 4, panelY + 12);
-    
-    ctx.fillStyle = '#2ecc71';
-    ctx.fillText(`Goal: ${generationStats.reachedCount}`, panelX + 4, panelY + 24);
-    
-    ctx.fillStyle = '#3498db';
-    ctx.fillText(`Alive: ${generationStats.aliveCount}`, panelX + 4, panelY + 36);
-    
+
+    ctx.fillStyle = generationStats.reachedCount > 0 ? '#e30606' : '#bbb';
+    ctx.fillText(`Goal: ${generationStats.reachedCount}`, panelX + 4, panelY + 12);
     ctx.fillStyle = '#bbb';
-    ctx.fillText(`Avg: ${generationStats.avgFitness.toFixed(2)}`, panelX + 4, panelY + 48);
-    
-    ctx.fillStyle = '#e74c3c';
-    ctx.fillText(`Best: ${generationStats.maxFitness.toFixed(2)}`, panelX + 4, panelY + 60);
-    
+    ctx.fillText(`Avg: ${generationStats.avgFitness.toFixed(2)}`, panelX + 4, panelY + 24);
     if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
         ctx.font = '8px "Noto Sans"';
-        ctx.fillText('W1:', panelX + 4, panelY + 74);
-        drawGradientBar(panelX + 22, panelY + 68, 62, 7, avgGradients.W1);
+        ctx.fillText('W1:', panelX + 4, panelY + 37);
+        drawGradientBar(panelX + 22, panelY + 31, 62, 7, avgGradients.W1);
         
-        ctx.fillText('W2:', panelX + 4, panelY + 86);
-        drawGradientBar(panelX + 22, panelY + 80, 62, 7, avgGradients.W2);
+        ctx.fillText('W2:', panelX + 4, panelY + 51);
+        drawGradientBar(panelX + 22, panelY + 45, 62, 7, avgGradients.W2);
     }
 }
 
@@ -602,15 +591,16 @@ function drawFitnessHistogram(pop) {
         hctx.fillRect(x + 1, y, Math.max(1, barW - 2), h);
     }
 
-    hctx.fillStyle = '#fff';
-    hctx.font = '11px sans-serif';
+    hctx.fillStyle = '#1ccf00';
+    hctx.font = '12px sans-serif';
     hctx.textAlign = 'center';
-    hctx.fillText('Rozkład fitness', cw / 2, 12);
-    hctx.font = '9px sans-serif';
+    hctx.fillText('ROZKŁAD FITNESS', cw / 2, 15);
+    hctx.font = '10px sans-serif';
+    hctx.fillStyle = '#fff';
     const fmt = v => (v === 0 || Object.is(v, -0) ? 0 : v).toFixed(1);
-    hctx.fillText(fmt(minF), barW * 0.5, ch - 4);
-    hctx.fillText(fmt((minF + maxF) / 2), cw / 2, ch - 4);
-    hctx.fillText(fmt(maxF), cw - barW * 0.6, ch - 4);
+    hctx.fillText(fmt(minF), barW * 0.5, ch - 6);
+    hctx.fillText(fmt((minF + maxF) / 2), cw / 2, ch - 6);
+    hctx.fillText(fmt(maxF), cw - barW * 0.6, ch - 6);
 }
 
 function computeAverageGradients(eliteAgents) {
@@ -892,7 +882,7 @@ function loop() {
 
         const allDone = population.every(a => a.dead || a.reached);
         const timeUp = frameCount >= STEP_LIMIT;
-
+        popEl.textContent = alive;
         if (allDone || timeUp) {
             evolve();
             bestEl.textContent = bestFitness.toFixed(3);
