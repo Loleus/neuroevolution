@@ -32,9 +32,14 @@
 
             <span class="pill">Populacja<br><b id="pop"></b></span>
             <span class="pill">Generacja<br><b id="gen">0</b></span>
-            <span class="pill">Najlepszy<br><b id="best">0.000</b></span>
+            <span class="pill">Naj./Śr.fit<br><b id="best">0.000</b> / <b id="avg">0.000</b></span>
         </div>
         <div class="params">
+            <div class="param-line">
+                <label><b>Prędkość</b></label>
+                <span><b id="speedVal">10.0</b></span>
+            </div>
+            <input id="speed" type="range" min="5" max="20" value="10">
 
             <div class="param-line">
                 <label><b>Neurony</b></label>
@@ -57,12 +62,12 @@
 
             <div class="param-line">
                 <label><b>Rozmiar turnieju</b></label>
-                <span><b id="tourSizeVal">7</b></span>
+                <span><b id="tourSizeVal">20</b></span>
             </div>
-            <input id="tourSize" type="range" min="2" max="50" value="7">
+            <input id="tourSize" type="range" min="2" max="50" value="20">
 
             <label>
-                <input id="tourNoRepeat" type="checkbox" checked />
+                <input id="tourNoRepeat" type="checkbox" />
                 Bez powtórzeń
             </label>
 

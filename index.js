@@ -20,11 +20,11 @@ const POP_SIZE = 100;
 let HIDDEN = 8;
 let MUT_RATE = 0.1;
 let ELITE_COUNT = 3;
-let TOUR_SIZE = 7;
-let TOUR_NO_REPEAT = true;
+let TOUR_SIZE = 20  ;
+let TOUR_NO_REPEAT = false;
 
 const STEP_LIMIT = 600;
-const SPEED = 1.0;
+let SPEED = 1.0;
 
 // ═══════════════════════════════════════════════════════════════
 // NOWE STAŁE - SYSTEM OSTRZEŻEŃ I ŚLEDZENIA
@@ -51,6 +51,7 @@ const ctx = cv.getContext('2d');
 const popEl = document.getElementById('pop');
 const genEl = document.getElementById('gen');
 const bestEl = document.getElementById('best');
+const avgEl = document.getElementById('avg');
 const hiddenEl = document.getElementById('hidden');
 const hiddenValEl = document.getElementById('hiddenVal');
 const mutRateEl = document.getElementById('mutRate');
@@ -63,9 +64,18 @@ const tourSizeEl = document.getElementById('tourSize');
 const tourSizeValEl = document.getElementById('tourSizeVal');
 const tourNoRepeatEl = document.getElementById('tourNoRepeat');
 const histCanvas = document.getElementById('hist');
+const speedEl = document.getElementById('speed');
+const speedValEl = document.getElementById('speedVal');
 const hctx = histCanvas ? histCanvas.getContext('2d') : null;
 
 popEl.textContent = POP_SIZE;
+
+// Ustaw wartość prędkości zgodnie z początkowym SPEED (1.0 -> 10 na suwaku)
+if (speedEl && speedValEl) {
+    const initialSlider = 10; // 10 na suwaku odpowiada SPEED = 1.0
+    speedEl.value = String(initialSlider);
+    speedValEl.textContent = initialSlider.toFixed(1);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // HANDLERY UI
@@ -94,6 +104,18 @@ tourSizeEl.oninput = () => {
 tourNoRepeatEl.onchange = () => {
     TOUR_NO_REPEAT = tourNoRepeatEl.checked;
 };
+
+if (speedEl) {
+    speedEl.oninput = () => {
+        const sliderVal = +speedEl.value;          // zakres 5–10
+        SPEED = sliderVal / 10;                    // 5 -> 0.5, 10 -> 1.0
+        if (speedValEl) {
+            speedValEl.textContent = sliderVal.toFixed(1);
+        }
+        // Zmiana prędkości resetuje całą populację, jak przy zmianie liczby neuronów
+        resetPopulation(true);
+    };
+}
 
 btnRestart.onclick = () => resetPopulation(true);
 
@@ -492,7 +514,7 @@ function drawNetworkInfo() {
     const panelX = 5;
     const panelY = 5;
     const panelW = 90;
-    const panelH = 58;
+    const panelH = 45;
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
@@ -505,17 +527,13 @@ function drawNetworkInfo() {
 
     ctx.fillStyle = generationStats.reachedCount > 0 ? '#eb4343' : '#bbb';
     ctx.fillText(`Goal: ${generationStats.reachedCount}`, panelX + 4, panelY + 12);
-    ctx.fillStyle = '#bbb';
-    ctx.fillText(`Avg: ${generationStats.avgFitness.toFixed(2)}`, panelX + 4, panelY + 24);
-    if (avgGradients.W1 !== null) {
         ctx.fillStyle = '#888';
         ctx.font = '8px "Noto Sans"';
-        ctx.fillText('W1:', panelX + 4, panelY + 37);
-        drawGradientBar(panelX + 22, panelY + 31, 62, 7, avgGradients.W1);
+        ctx.fillText('W1:', panelX + 4, panelY + 24);
+        drawGradientBar(panelX + 22, panelY + 18, 62, 7, avgGradients.W1 ? avgGradients.W1 : 0);
 
-        ctx.fillText('W2:', panelX + 4, panelY + 51);
-        drawGradientBar(panelX + 22, panelY + 45, 62, 7, avgGradients.W2);
-    }
+        ctx.fillText('W2:', panelX + 4, panelY + 38);
+        drawGradientBar(panelX + 22, panelY + 32, 62, 7, avgGradients.W2 ? avgGradients.W2 : 0);
 }
 
 function drawGradientBar(x, y, w, h, magnitude) {
@@ -778,8 +796,10 @@ function resetPopulation(hard = false) {
     }
     population = Array.from({ length: POP_SIZE }, () => new Agent(new Net(6, HIDDEN, 2)));
     bestFitness = 0;
+    totalFitness = 0;
     genEl.textContent = generation;
     bestEl.textContent = bestFitness.toFixed(3);
+    avgEl.textContent = (totalFitness / population.length).toFixed(3);
     if (hctx && histCanvas) {
         drawFitnessHistogram(population);
     }
@@ -852,6 +872,7 @@ function evolve() {
 
     population = nextGen;
     generation++;
+    avgEl.textContent = (totalFitness / population.length).toFixed(3);
     genEl.textContent = generation;
 }
 
@@ -888,7 +909,6 @@ function loop() {
         if (allDone || timeUp) {
             evolve();
             bestEl.textContent = bestFitness.toFixed(3);
-
             frameCount = 0;
             for (const agent of population) {
                 agent.x = start.x;

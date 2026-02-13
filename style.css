@@ -79,7 +79,7 @@
 
      .hist .pill {
          width: 32%;
-         padding: 3px 10px 6px;
+         padding: 3px 4px 6px;
          text-align: center;
          border: 1px solid var(--color-border);
          background: var(--color-bg-panel);
