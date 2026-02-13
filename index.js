@@ -39,7 +39,8 @@ let generationStats = {
     avgFitness: 0,
     maxFitness: 0,
     aliveCount: POP_SIZE,
-    reachedCount: 0
+    reachedCount: 0,
+    stdFitness: 0
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -514,7 +515,7 @@ function drawNetworkInfo() {
     const panelX = 5;
     const panelY = 5;
     const panelW = 90;
-    const panelH = 45;
+    const panelH = 72;
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
@@ -527,13 +528,20 @@ function drawNetworkInfo() {
 
     ctx.fillStyle = generationStats.reachedCount > 0 ? '#eb4343' : '#bbb';
     ctx.fillText(`Goal: ${generationStats.reachedCount}`, panelX + 4, panelY + 12);
-        ctx.fillStyle = '#888';
-        ctx.font = '8px "Noto Sans"';
-        ctx.fillText('W1:', panelX + 4, panelY + 24);
-        drawGradientBar(panelX + 22, panelY + 18, 62, 7, avgGradients.W1 ? avgGradients.W1 : 0);
+    ctx.fillStyle = '#888';
+    ctx.font = '8px "Noto Sans"';
+    ctx.fillText('W1:', panelX + 4, panelY + 24);
+    drawGradientBar(panelX + 22, panelY + 18, 62, 7, avgGradients.W1 ? avgGradients.W1 : 0);
 
-        ctx.fillText('W2:', panelX + 4, panelY + 38);
-        drawGradientBar(panelX + 22, panelY + 32, 62, 7, avgGradients.W2 ? avgGradients.W2 : 0);
+    ctx.fillText('W2:', panelX + 4, panelY + 38);
+    drawGradientBar(panelX + 22, panelY + 32, 62, 7, avgGradients.W2 ? avgGradients.W2 : 0);
+
+    ctx.fillStyle = '#bbb';
+    ctx.fillText(`σ: ${generationStats.stdFitness.toFixed(2)}`, panelX + 4, panelY + 52);
+    if (avgGradients.W1 != null && avgGradients.W2 != null && avgGradients.W1 > 1e-8) {
+        const ratio = avgGradients.W2 / avgGradients.W1;
+        ctx.fillText(`W2/W1: ${ratio.toFixed(2)}`, panelX + 4, panelY + 64);
+    }
 }
 
 function drawGradientBar(x, y, w, h, magnitude) {
@@ -571,21 +579,12 @@ function drawFitnessHistogram(pop) {
 
     const bins = 20;
     const counts = new Array(bins).fill(0);
+    const scaleMin = 0, scaleMax = 10; // stała skala 0–10
 
-    let minF = Infinity, maxF = -Infinity;
     for (const a of pop) {
-        const v = a.fitness;
-        if (v < minF) minF = v;
-        if (v > maxF) maxF = v;
-    }
-    minF = Object.is(minF, -0) ? 0 : minF;
-    maxF = Object.is(maxF, -0) ? 0 : maxF;
-
-    const range = Math.max(1e-8, maxF - minF);
-    for (const a of pop) {
-        const norm = (a.fitness - minF) / range;
-        const v = Math.max(0, Math.min(1, norm));
-        let idx = Math.floor(v * bins);
+        const v = Math.min(10, Math.max(0, a.fitness)); // wartości > 10 traktowane jako 10
+        const norm = v / scaleMax;
+        let idx = Math.floor(norm * bins);
         if (idx >= bins) idx = bins - 1;
         counts[idx]++;
     }
@@ -617,10 +616,11 @@ function drawFitnessHistogram(pop) {
     hctx.fillText('ROZKŁAD FITNESS', cw / 2, 15);
     hctx.font = '10px sans-serif';
     hctx.fillStyle = '#fff';
-    const fmt = v => (v === 0 || Object.is(v, -0) ? 0 : v).toFixed(1);
-    hctx.fillText(fmt(minF), barW * 0.6, ch - 6);
-    hctx.fillText(fmt((minF + maxF) / 2), cw / 2, ch - 6);
-    hctx.fillText(fmt(maxF), cw - barW * 0.7, ch - 6);
+    const labels = [0, 2.5, 5, 7.5, 10];
+    for (const val of labels) {
+        const x = (val / scaleMax) * (cw-10);
+        hctx.fillText(String(val), x+5, ch - 6);
+    }
 }
 
 function computeAverageGradients(eliteAgents) {
@@ -708,9 +708,9 @@ function crossoverWeights(w1, w2) {
 
 function mutateWeights(w, multiplier = 1.) {
     const baseStrength = 0.3;
-    // const decayFactor = Math.exp(-generation / 500);
+    const decayFactor = Math.exp(-generation / 800);
     const minStrength = 0.1;
-    const baseMutationStrength = Math.max(minStrength, baseStrength * multiplier);
+    const baseMutationStrength = Math.max(minStrength, baseStrength * multiplier * decayFactor);
 
     // Oblicz średnie wartości bezwzględne wag dla każdej warstwy
     let sumW1 = 0, countW1 = 0;
@@ -787,7 +787,7 @@ function resetPopulation(hard = false) {
         generation = 0;
         elitePaths = [];
         avgGradients = { W1: null, W2: null };
-        generationStats = { avgFitness: 0, maxFitness: 0, aliveCount: POP_SIZE, reachedCount: 0 };
+        generationStats = { avgFitness: 0, maxFitness: 0, aliveCount: POP_SIZE, reachedCount: 0, stdFitness: 0 };
         if (hctx && histCanvas) {
             hctx.clearRect(0, 0, histCanvas.width, histCanvas.height);
             hctx.fillStyle = '#0b192b';
@@ -811,9 +811,11 @@ function evolve() {
     let aliveCount = 0;
     let reachedCount = 0;
 
+    let sumSqFitness = 0;
     for (const agent of population) {
         agent.computeFitness();
         totalFitness += agent.fitness;
+        sumSqFitness += agent.fitness * agent.fitness;
         if (!agent.dead) aliveCount++;
         if (agent.reached) reachedCount++;
         if (!best || agent.fitness > best.fitness) {
@@ -821,12 +823,17 @@ function evolve() {
         }
     }
     bestFitness = best.fitness;
+    const n = population.length;
+    const avgF = totalFitness / n;
+    const variance = (sumSqFitness / n) - (avgF * avgF);
+    const stdFitness = variance > 0 ? Math.sqrt(variance) : 0;
 
     generationStats = {
-        avgFitness: totalFitness / population.length,
+        avgFitness: avgF,
         maxFitness: bestFitness,
         aliveCount: aliveCount,
-        reachedCount: reachedCount
+        reachedCount: reachedCount,
+        stdFitness: stdFitness
     };
 
     drawFitnessHistogram(population);
