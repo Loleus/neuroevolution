@@ -690,9 +690,9 @@ function crossoverWeights(w1, w2) {
 
 function mutateWeights(w, multiplier = 1.) {
     const baseStrength = 0.3;
-    const decayFactor = Math.exp(-generation / 500);
+    // const decayFactor = Math.exp(-generation / 500);
     const minStrength = 0.1;
-    const baseMutationStrength = Math.max(minStrength, baseStrength * decayFactor * multiplier);
+    const baseMutationStrength = Math.max(minStrength, baseStrength * multiplier);
 
     // Oblicz średnie wartości bezwzględne wag dla każdej warstwy
     let sumW1 = 0, countW1 = 0;
