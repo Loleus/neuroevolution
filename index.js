@@ -296,19 +296,19 @@ class Agent {
                 }
                 return;
             }
-            
+
             this.warnings++;
             this.warningFlash = WARNING_FLASH_FRAMES;
-            
+
             if (this.warnings >= MAX_WARNINGS) {
                 this.dead = true;
                 return;
             }
-            
+
             // Próba odbicia
             const escapeX = this.x - out[0] * SPEED * 0.8;
             const escapeY = this.y - out[1] * SPEED * 0.8;
-            
+
             if (!collides(escapeX, escapeY, this.r)) {
                 this.x = escapeX;
                 this.y = escapeY;
@@ -318,7 +318,7 @@ class Agent {
                 const sideY1 = this.y - out[0] * SPEED * 0.5;
                 const sideX2 = this.x - out[1] * SPEED * 0.5;
                 const sideY2 = this.y + out[0] * SPEED * 0.5;
-                
+
                 if (!collides(sideX1, sideY1, this.r)) {
                     this.x = sideX1;
                     this.y = sideY1;
@@ -350,23 +350,23 @@ class Agent {
             this.fitness += (STEP_LIMIT - this.step) / STEP_LIMIT * 0.1;
             return this.fitness;
         }
-    
+
         const currentDist = Math.hypot(this.x - goal.x, this.y - goal.y);
         const bestProgress = 1 - (this.minDist / START_TO_GOAL_DIST);
         const currentProgress = 1 - (currentDist / START_TO_GOAL_DIST);
         // Ważona kombinacja: 60% najlepsza, 40% aktualna
         const progress = bestProgress * 0.6 + currentProgress * 0.4;
         const progressScore = Math.max(0, progress) * 8.0;
-    
+
         const aliveBonus = this.dead ? 0 : 0.3;
         const exploreBonus = progress * (this.step / STEP_LIMIT) * 0.2;
         const survivalBonus = this.warnings < MAX_WARNINGS ? 0.2 * (MAX_WARNINGS - this.warnings) / MAX_WARNINGS : 0;
         // WAŻNE: Bonus za bycie blisko celu w końcowej fazie (zachęca do dalszego ruchu)
         const proximityBonus = currentProgress > 0.5 ? (currentProgress - 0.5) * 3.0 : 0;
-    
-        this.fitness = progressScore + aliveBonus + exploreBonus + survivalBonus + proximityBonus;
+
+        this.fitness = Math.max(0, progressScore + aliveBonus + exploreBonus + survivalBonus + proximityBonus);
         this.fitness = Math.min(this.fitness, 9.90);
-    
+
         return this.fitness;
     }
 
@@ -384,7 +384,7 @@ class Agent {
         }
 
         ctx.beginPath();
-        
+
         // Miganie przy ostrzeżeniu
         if (this.warningFlash > 0 && this.warningFlash % 4 < 2) {
             ctx.fillStyle = this.warnings >= MAX_WARNINGS - 1 ? '#ff3300' : '#ff6600';
@@ -392,7 +392,7 @@ class Agent {
             ctx.fill();
             ctx.beginPath();
         }
-        
+
         if (this.reached) {
             ctx.fillStyle = '#2ecc71';
             ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
@@ -461,23 +461,23 @@ function drawElitePaths() {
         'rgba(231, 76, 60, 0.25)',
         'rgba(155, 89, 182, 0.2)'
     ];
-    
+
     for (let i = 0; i < elitePaths.length && i < ELITE_COUNT; i++) {
         const path = elitePaths[i];
         if (path.length < 2) continue;
-        
+
         ctx.beginPath();
         ctx.strokeStyle = colors[i % colors.length];
         ctx.lineWidth = 2 - i * 0.4;
         ctx.setLineDash([4, 4]);
-        
+
         ctx.moveTo(path[0].x, path[0].y);
         for (let j = 1; j < path.length; j++) {
             ctx.lineTo(path[j].x, path[j].y);
         }
         ctx.stroke();
         ctx.setLineDash([]);
-        
+
         if (path.length > 0) {
             const last = path[path.length - 1];
             ctx.beginPath();
@@ -493,14 +493,14 @@ function drawNetworkInfo() {
     const panelY = 5;
     const panelW = 90;
     const panelH = 58;
-    
+
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(panelX, panelY, panelW, panelH);
-    
+
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 1;
     ctx.strokeRect(panelX, panelY, panelW, panelH);
-    
+
     ctx.font = '11px "Noto Sans"';
 
     ctx.fillStyle = generationStats.reachedCount > 0 ? '#eb4343' : '#bbb';
@@ -512,7 +512,7 @@ function drawNetworkInfo() {
         ctx.font = '8px "Noto Sans"';
         ctx.fillText('W1:', panelX + 4, panelY + 37);
         drawGradientBar(panelX + 22, panelY + 31, 62, 7, avgGradients.W1);
-        
+
         ctx.fillText('W2:', panelX + 4, panelY + 51);
         drawGradientBar(panelX + 22, panelY + 45, 62, 7, avgGradients.W2);
     }
@@ -520,10 +520,10 @@ function drawNetworkInfo() {
 
 function drawGradientBar(x, y, w, h, magnitude) {
     const norm = Math.min(1, magnitude / 2);
-    
+
     ctx.fillStyle = 'rgba(50, 50, 50, 0.8)';
     ctx.fillRect(x, y, w, h);
-    
+
     let r, g, b;
     if (norm < 0.5) {
         const t = norm * 2;
@@ -536,10 +536,10 @@ function drawGradientBar(x, y, w, h, magnitude) {
         g = Math.floor(255 * (1 - t));
         b = 0;
     }
-    
+
     ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
     ctx.fillRect(x, y, w * norm, h);
-    
+
     ctx.strokeStyle = '#666';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, w, h);
@@ -560,6 +560,8 @@ function drawFitnessHistogram(pop) {
         if (v < minF) minF = v;
         if (v > maxF) maxF = v;
     }
+    minF = Object.is(minF, -0) ? 0 : minF;
+    maxF = Object.is(maxF, -0) ? 0 : maxF;
 
     const range = Math.max(1e-8, maxF - minF);
     for (const a of pop) {
@@ -598,27 +600,27 @@ function drawFitnessHistogram(pop) {
     hctx.font = '10px sans-serif';
     hctx.fillStyle = '#fff';
     const fmt = v => (v === 0 || Object.is(v, -0) ? 0 : v).toFixed(1);
-    hctx.fillText(fmt(minF), barW * 0.5, ch - 6);
+    hctx.fillText(fmt(minF), barW * 0.6, ch - 6);
     hctx.fillText(fmt((minF + maxF) / 2), cw / 2, ch - 6);
-    hctx.fillText(fmt(maxF), cw - barW * 0.6, ch - 6);
+    hctx.fillText(fmt(maxF), cw - barW * 0.7, ch - 6);
 }
 
 function computeAverageGradients(eliteAgents) {
     if (eliteAgents.length === 0) return;
-    
+
     let sumW1 = 0, countW1 = 0;
     let sumW2 = 0, countW2 = 0;
-    
+
     for (const agent of eliteAgents) {
         const net = agent.net;
-        
+
         for (const row of net.W1) {
             for (const val of row) {
                 sumW1 += val * val;
                 countW1++;
             }
         }
-        
+
         for (const row of net.W2) {
             for (const val of row) {
                 sumW2 += val * val;
@@ -626,7 +628,7 @@ function computeAverageGradients(eliteAgents) {
             }
         }
     }
-    
+
     avgGradients.W1 = Math.sqrt(sumW1 / countW1);
     avgGradients.W2 = Math.sqrt(sumW2 / countW2);
 }
@@ -691,13 +693,13 @@ function mutateWeights(w, multiplier = 1.) {
     const decayFactor = Math.exp(-generation / 500);
     const minStrength = 0.1;
     const baseMutationStrength = Math.max(minStrength, baseStrength * decayFactor * multiplier);
-    
+
     // Oblicz średnie wartości bezwzględne wag dla każdej warstwy
     let sumW1 = 0, countW1 = 0;
     let sumW2 = 0, countW2 = 0;
     let sumB1 = 0, countB1 = 0;
     let sumB2 = 0, countB2 = 0;
-    
+
     for (let i = 0; i < w.W1.length; i++) {
         for (let j = 0; j < w.W1[i].length; j++) {
             sumW1 += Math.abs(w.W1[i][j]);
@@ -718,18 +720,18 @@ function mutateWeights(w, multiplier = 1.) {
         sumB2 += Math.abs(w.b2[i]);
         countB2++;
     }
-    
+
     const avgW1 = sumW1 / countW1 || 0.38; // fallback do wartości początkowej
     const avgW2 = sumW2 / countW2 || 0.45;
     const avgB1 = sumB1 / countB1 || 0.0;
     const avgB2 = sumB2 / countB2 || 0.0;
-    
+
     // Normalizacja mutacji względem średniej wartości warstwy
     const normW1 = baseMutationStrength * (avgW1 / 0.4); // 0.4 to referencyjna średnia
     const normW2 = baseMutationStrength * (avgW2 / 0.4);
     const normB1 = baseMutationStrength * (Math.max(avgB1, 0.1) / 0.1);
     const normB2 = baseMutationStrength * (Math.max(avgB2, 0.1) / 0.1);
-    
+
     function mutMatrix(M, normalizedStrength) {
         for (let i = 0; i < M.length; i++) {
             for (let j = 0; j < M[i].length; j++) {
@@ -788,7 +790,7 @@ function evolve() {
     let totalFitness = 0;
     let aliveCount = 0;
     let reachedCount = 0;
-    
+
     for (const agent of population) {
         agent.computeFitness();
         totalFitness += agent.fitness;
@@ -813,14 +815,14 @@ function evolve() {
     const nextGen = [];
 
     const eliteCount = generation > 50 ? Math.max(1, Math.floor(ELITE_COUNT * 0.7)) : ELITE_COUNT;
-    
+
     elitePaths = [];
     for (let i = 0; i < eliteCount; i++) {
         if (sorted[i].path.length > 0) {
             elitePaths.push([...sorted[i].path]);
         }
     }
-    
+
     computeAverageGradients(sorted.slice(0, eliteCount));
 
     for (let i = 0; i < eliteCount; i++) {
@@ -866,12 +868,12 @@ function loop() {
         if (!paused) agent.update();
         agent.draw();
     }
-    
+
     drawNetworkInfo();
 
     if (!paused) {
         frameCount++;
-        
+
         let alive = 0, reached = 0;
         for (const a of population) {
             if (!a.dead) alive++;
