@@ -503,7 +503,7 @@ function drawNetworkInfo() {
     
     ctx.font = '11px "Noto Sans"';
 
-    ctx.fillStyle = generationStats.reachedCount > 0 ? '#e30606' : '#bbb';
+    ctx.fillStyle = generationStats.reachedCount > 0 ? '#eb4343' : '#bbb';
     ctx.fillText(`Goal: ${generationStats.reachedCount}`, panelX + 4, panelY + 12);
     ctx.fillStyle = '#bbb';
     ctx.fillText(`Avg: ${generationStats.avgFitness.toFixed(2)}`, panelX + 4, panelY + 24);
