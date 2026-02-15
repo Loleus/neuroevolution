@@ -114,7 +114,7 @@ if (speedEl) {
             speedValEl.textContent = sliderVal.toFixed(1);
         }
         // Zmiana prędkości resetuje całą populację, jak przy zmianie liczby neuronów
-        resetPopulation(true);
+        // resetPopulation(true);
     };
 }
 

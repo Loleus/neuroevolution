@@ -17,7 +17,7 @@
          --color-text-yellow: #ecd53f;
          --color-text-gray: #d0d0d0;
          --color-border: #2f61d5;
-         --color-button: #b90000;
+         --color-button: #a60000;
          --color-button-hover: #ff5858;
          --color-shadow: rgba(0, 0, 0, 0.6);
          --shadow-big-blur: 12px;
@@ -110,7 +110,7 @@
      /* === PARAMETRY === */
      .params {
          background: var(--color-bg-panel);
-         padding: 0 var(--radius);
+         padding: 0 3px;
          margin: 5px 0 10px;
      }
 
@@ -129,6 +129,7 @@
          width: 100%;
          margin-bottom: 6px;
          line-height: 1.5;
+         cursor: pointer;
      }
 
      .buttons {
@@ -169,8 +170,8 @@
 
      /* === CANVAS === */
      #cv {
-         width: 512px;
-         height: 512px;
+         width: 570px;
+         height: 570px;
          background: var(--color-bg-panel);
          border-radius: var(--radius);
          box-shadow: var(--shadow-medium);
