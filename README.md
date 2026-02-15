@@ -69,51 +69,19 @@ Składniki fitness:
 
 Funkcja jest **wypukłą kombinacją** powyższych składników, co zapewnia stabilną ewolucję.
 
----
-
-## Elementy wizualizacji i kontrolki
-
-### Panel główny (labirynt)
-
-- **Niebieskie kółko** – start
-- **Zielone kółko** – cel
-- **Szare prostokąty** – ściany labiryntu
-- **Kolorowe kropki** – agenci:
-  - **Szare** – zwykły agent
-  - **Żółte** – elita (najlepsi w populacji)
-  - **Zielone** – agent, który dotarł do celu
-  - **Czarne** – martwy agent
-  - **Czerwone kropki** nad agentem – liczba ostrzeżeń kolizji
-
-### Ścieżki elity
-- **Żółte, przerywane linie** – pokazują trasy, którymi poruszały się najlepsze agenty w poprzedniej generacji
-- **Kolorowe punkty na końcach** – ostatnie pozycje elit
-
-### Panel informacyjny na labiryncie
-W lewym górnym rogu znajduje się mały panel z kluczowymi metrykami:
-- **Goal:** liczba agentów, które dotarły do celu w bieżącej generacji
-- **W1, W2:** paski wskazujące średnią wartość wag warstwy 1 i 2 (większa wartość = silniejsze połączenia)
-- **σ:** odchylenie standardowe fitness w populacji
-- **W2/W1:** stosunek średnich wag – wskazuje, która warstwa ma większe znaczenie
-
-### Histogram rozkładu fitness
-Wykres słupkowy pod labiryntem pokazuje **rozkład wartości fitness** w populacji. Oś X: przedziały fitness (0–10), oś Y: liczba agentów w przedziale. Kolory od zielonego do niebieskiego.
-
-### Kontrolki parametrów (prawa kolumna)
-
-#### 1. Kontrolki symulacji
+#### 6. Kontrolki symulacji
 - **Przycisk „Restart”** – rozpoczyna ewolucję od nowa (zeruje wszystkie pokolenia)
 - **Przycisk „Pauza/Wznów”** – wstrzymuje/wznawia symulację
-- **Suwak prędkości** – reguluje szybkość ruchu agentów (0.5x – 1.0x)
+- **Suwak prędkości** – reguluje szybkość ruchu agentów (0.5x – 2.0x)
 
-#### 2. Parametry neuroewolucji
+#### 7. Parametry neuroewolucji
 - **Neurony ukryte** (2–20) – liczba neuronów w warstwie ukrytej sieci
 - **Współczynnik mutacji** (1%–30%) – prawdopodobieństwo mutacji pojedynczej wagi
 - **Liczba elitarna** (1–10) – ile najlepszych agentów przechodzi bez zmian do następnej generacji
 - **Rozmiar turnieju** (5–50) – liczba uczestników w każdym turnieju selekcji
 - **Turniej bez powtórzeń** – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju
 
-#### 3. Informacje o sieci neuronowej
+#### 8. Informacje o sieci neuronowej
 - **Warstwa ukryta** – aktualna liczba neuronów
 - **Wejścia/wyjścia** – struktura sieci
 - **Średnie wartości wag** W1 i W2 – średnia geometryczna wartości bezwzględnych wag danej warstwy
@@ -122,8 +90,6 @@ Wykres słupkowy pod labiryntem pokazuje **rozkład wartości fitness** w popula
 - **Osiągnęło cel** – liczba agentów, które dotarły do celu w bieżącej generacji
 
 ---
-
-## Opis parametrów i statystyk
 
 ### 1. Wagi sieci neuronowej (W1, W2)
 - **W1** – macierz wag łączących warstwę wejściową z ukrytą. Rozmiar: `hidden × 6`
