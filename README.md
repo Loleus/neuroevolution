@@ -74,7 +74,7 @@ Funkcja jest **wypukłą kombinacją** powyższych składników, co zapewnia sta
 ## Elementy wizualizacji i kontrolki
 
 ### Panel główny (labirynt)
-![Labirynt](https://via.placeholder.com/320x320/333/777?text=Labirynt)
+
 - **Niebieskie kółko** – start
 - **Zielone kółko** – cel
 - **Szare prostokąty** – ściany labiryntu
