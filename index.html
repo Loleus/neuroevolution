@@ -5,19 +5,22 @@
     <meta charset="UTF-8">
     <title>Neuroewolucja</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
+    <meta name="description"
+        content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
     <!-- Facebook Meta Tags -->
     <meta property="og:url" content="https://loleus.github.io/neuroevolution/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Neuroewolucja">
-    <meta property="og:description" content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
+    <meta property="og:description"
+        content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
     <meta property="og:image" content="https://loleus.github.io/neuroevolution/ogpic.jpg">
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="loleus.github.io">
     <meta property="twitter:url" content="https://loleus.github.io/neuroevolution/">
     <meta name="twitter:title" content="Neuroewolucja">
-    <meta name="twitter:description" content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
+    <meta name="twitter:description"
+        content="Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.">
     <meta name="twitter:image" content="https://loleus.github.io/neuroevolution/ogpic.jpg">
 
     <link rel="stylesheet" href="./style.css">
@@ -35,7 +38,8 @@
             <span class="pill">Naj./Śr.fit<br><b id="best">0.000</b> / <b id="avg">0.000</b></span>
         </div>
         <div class="params">
-            <div class="param-line" style="border: 1px solid #00ca18; padding: 0 10px 3px;border-radius: 5px;margin-bottom: 5px;">
+            <div class="param-line"
+                style="border: 1px solid #00ca18; padding: 0 10px 3px;border-radius: 5px;margin-bottom: 5px;">
                 <label><b>Neurony</b></label>
                 <span><b id="hiddenVal">8</b></span>
             </div>
@@ -64,7 +68,7 @@
                 <label><b>Rozmiar turnieju</b></label>
                 <span><b id="tourSizeVal">20</b></span>
             </div>
-            <input id="tourSize" type="range" min="2" max="50" value="20">
+            <input id="tourSize" type="range" min="5" max="50" value="20">
 
             <label>
                 <input id="tourNoRepeat" type="checkbox" />
@@ -77,15 +81,22 @@
             <button id="pause">Pauza</button>
         </div>
 
-        <!-- <p id="desc">
+        <p id="desc">
             Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
             poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
-        </p> -->
+        </p>
 
     </div>
 
     <div id="left">
         <canvas id="cv" width="320" height="320"></canvas>
+        <p id="desc">
+            <b>Neurony</b> – liczba neuronów w warstwie ukrytej sieci<br>
+            <b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br>
+            <b>Elitaryzm</b> – ile najlepszych agentów przechodzi bez zmian do następnej generacji<br>
+            <b>Rozmiar turnieju</b> – liczba uczestników w każdym turnieju selekcji<br>
+            <b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju<br>
+        </p>
     </div>
 
     <script src="./index.js"></script>

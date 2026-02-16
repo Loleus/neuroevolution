@@ -182,7 +182,7 @@ gdzie suma obejmuje wszystkie wagi w danej warstwie. Używamy RMS zamiast proste
 
 ## Słownik pojęć
 
-| Termin | Definicja (dla matematyka) | Analogia biologiczna |
+| Termin | Definicja  | Analogia biologiczna |
 |--------|----------------------------|----------------------|
 | **Sieć neuronowa** | Funkcja $f: \mathbb{R}^n \to \mathbb{R}^m$ złożona z warstw liniowych przeplatanych nieliniowościami | Mózg – neurony połączone synapsami |
 | **Waga (weight)** | Współczynnik $w_{ij}$ w transformacji liniowej między warstwami | Siła połączenia między neuronami |
@@ -196,3 +196,161 @@ gdzie suma obejmuje wszystkie wagi w danej warstwie. Używamy RMS zamiast proste
 
 ---
 
+---
+
+## 🧬 Model Algorytmu i Architektura
+
+Ten projekt implementuje **Neuroewolucję (Neuroevolution)** – ewolucję sieci neuronowych przy użyciu algorytmu genetycznego, bez użycia propagacji wstecznej (gradient descent).
+
+### 1. Sieć Neuronowa (Fenotyp)
+Klasyczny **Perceptron Wielowarstwowy (MLP)** o stałej topologii.
+*   **Wejście (6):** Odległości od ścian (4 raycasty) + znormalizowany wektor do celu (2).
+*   **Ukryta (8):** Warstwa z aktywacją **ReLU** (`max(0, x)`).
+*   **Wyjście (2):** Wektor prędkości `(dx, dy)` z aktywacją **Tanh** (zakres `[-1, 1]`).
+*   **Inicjalizacja:** He Initialization (`sqrt(2/n)`) – kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali BP) i martwych neuronów.
+
+### 2. Algorytm Genetyczny (Optymalizator)
+To nie jest zwykły GA. Zastosowano kilka trików inżynieryjnych:
+
+| Operator | Metoda | Dlaczego taka? |
+| :--- | :--- | :--- |
+| **Selekcja** | **Turniejowa (Tournament)** | Szybka ($O(k)$), nie wymaga sortowania całej populacji. |
+| **Krzyżowanie** | **Jednorodne (Uniform)** | Każda waga losowo od rodzica A lub B. Lepsze niż 1-point crossover dla macierzy wag. |
+| **Mutacja** | **Adaptacyjna Gaussa** ⭐ | **Najważniejszy element.** Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na precyzyjny dostrój (fine-tuning). |
+| **Elityzm** | **Zachłanny (Greedy)** | Top 3 najlepszych przechodzi bez zmian. Gwarantuje monotoniczność fitnessu. |
+
+### 3. Porównanie z innymi podejściami
+
+| Algorytm | Złożoność | Kiedy używać? | Werdykt dla tego projektu |
+| :--- | :--- | :--- | :--- |
+| **Ten model (Simple GA)** | ⭐ Niska | Proste zadania sterowania, małe sieci. | ✅ **IDEALNY** |
+| **NEAT** | ⭐⭐⭐ Wysoka | Złożone topologie, gdy nie znamy rozmiaru sieci. | ❌ Overkill (za duży narzut) |
+| **Backprop (PPO/DQN)** | ⭐⭐ Średnia | Gęste nagrody (np. +1 za każdy krok), ciągła przestrzeń. | ⚠️ Trudne (nagroda jest rzadka: 0 lub 1) |
+
+---
+
+## 📊 Optymalność i Skalowalność
+
+### Czy ten model jest optymalny dla małej sieci?
+**TAK.** To jest "sweet spot" neuroewolucji.
+Dla ~74 wag (`(6+1)*8 + (8+1)*2`) prosty algorytm genetyczny zbiega się szybciej niż NEAT. NEAT traci czas na tworzenie nowych neuronów, których tu nie potrzebujemy. Adaptacyjna mutacja działa tu lepiej niż stały `mutation_rate`.
+
+### Jak bardzo można to skalować?
+
+| Parametr | Limit (w JS/Canvas) | Problem przy przekroczeniu |
+| :--- | :--- | :--- |
+| **Populacja** | **~300-500** | Spadek FPS. Pętla `update()` jest synchroniczna. |
+| **Neurony (Hidden)** | **~30-50** | Przestrzeń poszukiwań rośnie kwadratowo ($O(N^2)$). Powyżej 50 neuronów prosty GA zaczyna "błądzić". |
+| **Złożoność labiryntu** | **Wysoka** | Raycasting jest tani. Algorytm radzi sobie dobrze. |
+
+**Wniosek:** Jeśli chcesz sieć 10x większą, musisz zmienić algorytm na **CMA-ES** (ewolucja strategii) lub przenieść symulację do **WebGL/Wasm**. W obecnej formie jest to idealne demo "na serwetce".
+
+### Model sieci neuronowej
+
+W projekcie używana jest prosta, w pełni połączona sieć feed‑forward:
+
+- **Architektura:** `6 → HIDDEN → 2`  
+  - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)  
+  - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej  
+  - 2 wyjścia: wektor ruchu `(dx, dy)` agenta
+- **Aktywacje:**
+  - warstwa ukryta: ReLU
+  - wyjście: `tanh` (ruch ograniczony do [-1, 1])
+- **Uczenie:** brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie) na wagach `W1, b1, W2, b2`.  
+- **Inicjalizacja:** losowa z normalnego rozkładu (He‑podobna, skalowana względem rozmiarów warstw).
+
+To jest minimalny, jednowarstwowy MLP bez pamięci (brak RNN/LSTM, brak konwolucji).
+
+---
+
+### Model algorytmu genetycznego
+
+Zastosowany jest klasyczny GA/tournament selection nad parametrami sieci:
+
+1. **Kodowanie osobnika:** wszystkie wagi i biasy sieci (`W1, b1, W2, b2`).
+2. **Ocena (fitness):**
+   - głównie: postęp w kierunku celu (najlepsza i bieżąca minimalna odległość),
+   - bonusy: dotarcie do celu, szybkie dojście, przeżycie, mało kolizji, bliskość celu na końcu,
+   - fitness obcięty do ~10.
+3. **Selekcja:**
+   - sortowanie populacji wg fitness,
+   - **elita:** `ELITE_COUNT` najlepszych przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),
+   - reszta: **turniej** (Tournament Selection) z parametrami `TOUR_SIZE`, `TOUR_NO_REPEAT`.
+4. **Krzyżowanie (crossover):**
+   - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).
+5. **Mutacja:**
+   - prawdopodobieństwo mutacji pojedynczej wagi: `MUT_RATE`,
+   - siła mutacji zależna od:
+     - numeru generacji (maleje z czasem, ale nie do zera),
+     - średniej wartości wag i biasów w warstwach (normalizacja),
+     - współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).
+6. **Dodatki:**
+   - statystyki generacji (średni/max fitness, σ, histogram),
+   - heurystyki ruchu i system „ostrzeżeń” przy kolizjach, ale to logika środowiska, nie GA.
+
+To jest klasyczny GA + tournament, bez selekcji ruletkowej, bez CMA‑ES, bez NEAT (brak ewolucji topologii).
+
+---
+
+### Porównanie z innymi podejściami (złożoność / dopasowanie)
+
+**Sieć:**
+- W porównaniu do:
+  - głębokich MLP, CNN, RNN/LSTM, NEAT/HyperNEAT – ten model jest:
+    - dużo **prostszą** architekturą,
+    - w pełni wystarczającą dla małego środowiska 2D z kilkoma sensorami,
+    - lepiej skalowalny pamięciowo przy małej liczbie neuronów (O(6·HIDDEN + HIDDEN·2) parametrów).
+
+**Algorytm genetyczny:**
+- W porównaniu do:
+  - bardziej złożonych metod ewolucyjnych (CMA‑ES, NSGA‑II, NEAT, ES z self‑adaptacją),
+  - metod gradientowych (PPO, DQN, SAC),
+- ten GA jest:
+  - koncepcyjnie **bardzo prosty** (kilkadziesiąt linii logiki),
+  - dobrze dopasowany do małych sieci + małych populacji + prostych zadań nawigacyjnych,
+  - niewymagający obliczania gradientów ani konstrukcji funkcji wartości.
+
+---
+
+### Czy to jest optymalny model dla małej sieci?
+
+Dla tego typu problemu (mały labirynt 2D, kilkanaście neuronów):
+
+- **Tak, w praktyce jest to bardzo sensowny wybór:**
+  - implementacja jest prosta,
+  - łatwa wizualizacja i eksperymenty,
+  - brak potrzeby projektowania nagród pod RL.
+- Dla większych, bardziej złożonych zadań (ciągłe sterowanie, wysokowymiarowe sensory, obraz) takie proste GA + jednowarstwowy MLP zwykle:
+  - staje się **nieefektywne obliczeniowo** (wymagana znacznie większa populacja i więcej generacji),
+  - będzie przegrywać z metodami opartymi na gradientach lub zaawansowanymi ES.
+
+---
+
+### Skalowalność (pamięć, skuteczność)
+
+**Pamięć:**
+
+- Parametry na jednego agenta ~ `6·H + H·2 + H + 2 ≈ 8H + H + 2 ≈ 9H` wag (rzędu setek wartości dla H=8).  
+- Łączna pamięć ~ `O(POP_SIZE · HIDDEN)`:
+  - Przy `POP_SIZE=100, HIDDEN=8` – śladowe zużycie.
+  - Można bez problemu dojść rzędu:
+    - `HIDDEN ~ 100–200`,
+    - `POP_SIZE ~ 10^3` (w JS w przeglądarce to już górna granica komfortu).
+
+**Czas / skuteczność:**
+
+- Każda generacja: `O(POP_SIZE · STEP_LIMIT · (koszt_sieci + koszt_środowiska))`.
+- Dobrze się skaluje do:
+  - małych/w średnich `HIDDEN` i `POP_SIZE` (rzędu setek),
+  - krótkich epizodów (`STEP_LIMIT` kilkaset).
+- Przy bardzo dużych sieciach lub długich epizodach:
+  - liczba osobników i generacji potrzebnych do dobrego rozwiązania rośnie,
+  - metoda staje się **słabo skalowalna** w porównaniu z RL/gradientami.
+
+---
+
+### Podsumowanie
+
+- **Rodzaj sieci:** mały MLP `6 → HIDDEN → 2` z ReLU + tanh, uczony wyłącznie neuroewolucją (GA).
+- **Algorytm genetyczny:** turniej + elita + proste krzyżowanie binarne + adaptowana siła mutacji.
+- **Charakterystyka:** bardzo prosty, intuicyjny, dobrze dopasowany do małych zadań nawigacyjnych i małych sieci; nie jest optymalny dla dużych problemów, ale do demonstracji neuroewolucji w labiryncie 2D sprawdza się znakomicie.
