@@ -214,16 +214,6 @@ To nie jest zwykły GA. Zastosowłem kilka trikó:
 | **Selekcja** | **Turniejowa (Tournament)** | Szybka ($O(k)$), nie wymaga sortowania całej populacji. |
 | **Krzyżowanie** | **Jednorodne (Uniform)** | Każda waga losowo od rodzica A lub B. Lepsze niż 1-point crossover dla macierzy wag. |
 | **Mutacja** | **Adaptacyjna Gaussa** ⭐ | **Najważniejszy element.** Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na precyzyjny dostrój (fine-tuning). |
-| **Elityzm** | **Zachłanny (Greedy)** | Top 3 najlepszych przechodzi bez zmian. Gwarantuje monotoniczność fitnessu. |
-
-### 3. Porównanie z innymi podejściami
-
-| Algorytm | Złożoność | Kiedy używać? | Werdykt dla tego projektu |
-| :--- | :--- | :--- | :--- |
-| **Ten model (Simple GA)** | ⭐ Niska | Proste zadania sterowania, małe sieci. | ✅ **IDEALNY** |
-| **NEAT** | ⭐⭐⭐ Wysoka | Złożone topologie, gdy nie znamy rozmiaru sieci. | ❌ Overkill (za duży narzut) |
-| **Backprop (PPO/DQN)** | ⭐⭐ Średnia | Gęste nagrody (np. +1 za każdy krok), ciągła przestrzeń. | ⚠️ Trudne (nagroda jest rzadka: 0 lub 1) |
-
 ---
 
 ## 📊 Optymalność i Skalowalność
