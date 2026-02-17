@@ -167,6 +167,13 @@
          box-shadow: var(--shadow-medium);
          width: 100%
      }
+     .info {
+         padding: 10px;
+         color: var(--color-text-gray);
+         text-align: justify;
+         line-height: 1.4;
+         width: 100%
+     }
 
      /* === CANVAS === */
      #cv {

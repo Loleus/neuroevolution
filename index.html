@@ -84,7 +84,7 @@
 
     <div id="left">
         <canvas id="cv" width="320" height="320"></canvas>
-        <div class="desc">
+        <div class="info">
             <ul>
                 <li><b>Neurony</b> – liczba neuronów w warstwie ukrytej sieci<br></li>
                 <li><b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br></li>
@@ -132,10 +132,7 @@
                 <b>Ocena (fitness)</b><br>
                 - dotarcie do celu: +10.0 + bonus za szybkość<br>
                 - postęp w kierunku celu: nagroda za zmniejszenie odległości (najlepsza i aktualna)<br>
-                - bonus za przeżycie: +0.3 jeśli agent żyje<br>
-                - bonus za eksplorację: zachęta do ruchu w późniejszych krokach<br>
-                - bonus za unikanie kolizji: zmniejsza się z każdym ostrzeżeniem<br>
-                - bonus za bliskość celu w końcowej fazie: zachęta do „dokończenia” zadania<br>
+                - bonusy: za przeżycie: +0.3 jeśli agent żyje, za eksplorację: zachęta do ruchu w późniejszych krokach, za unikanie kolizji: zmniejsza się z każdym ostrzeżeniem, za bliskość celu w końcowej fazie: zachęta do „dokończenia” zadania<br>
             </li>
             <li>
                 <b>Selekcja:</b><br>
