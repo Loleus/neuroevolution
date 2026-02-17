@@ -124,8 +124,8 @@
                 <b>Inicjalizacja:</b>
             </li>
             - losowa z normalnego rozkładu (<a href="https://en.wikipedia.org/wiki/Weight_initialization"
-                target="_blank">He‑podobna</a>). Projekt używa He z mianownikiem fan-in + fan-out (w stylu Xavier/Glorot). Kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali <a
-                href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>) i martwych neuronów,
+                target="_blank">He‑podobna</a>). Klasyczna He jest pod <a
+                href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>: gradient ma sensowną skalę. Projekt używa He z mianownikiem fan-in + fan-out (w stylu Xavier/Glorot),  co działa jak dodatkowe „uśrednienie” skali w obu kierunkach przepływu sygnału. Kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali BP) i martwych neuronów,
             skalowana względem rozmiarów warstw.
         </ul>
 
