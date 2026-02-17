@@ -156,7 +156,6 @@
 
      /* === OPIS === */
      .desc {
-         margin-top: 18px;
          padding: 10px;
          background: var(--color-bg-gradient-2);
          border-radius: var(--radius);
@@ -187,7 +186,6 @@
          line-height: 1.5;
          max-height: calc(100vh - 28px);
          border-radius: var(--radius);
-         padding: 14px;
      }
     a {
         color: #b6f0ff;
