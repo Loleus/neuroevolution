@@ -168,6 +168,7 @@
          width: 100%
      }
      .info {
+        margin-top: 5px;
          padding: 10px;
          color: var(--color-text-gray);
          text-align: justify;
