@@ -221,6 +221,11 @@ To nie jest zwykły GA. Zastosowłem kilka trikó:
 ### Czy ten model jest optymalny dla małej sieci?
 **TAK.** To jest "sweet spot" neuroewolucji.
 Dla ~74 wag (`(6+1)*8 + (8+1)*2`) prosty algorytm genetyczny zbiega się szybciej niż NEAT. NEAT traci czas na tworzenie nowych neuronów, których tu nie potrzebujemy. Adaptacyjna mutacja działa tu lepiej niż stały `mutation_rate`.
+  - Łączna pamięć ~ `O(POP_SIZE · HIDDEN)`:
+  - Przy `POP_SIZE=100, HIDDEN=8` – śladowe zużycie.
+  - Można bez problemu dojść rzędu:
+  - `HIDDEN ~ 100–200`,
+  - `POP_SIZE ~ 10^3` (w JS w przeglądarce to już górna granica komfortu).
 
 ### Jak bardzo można to skalować?
 
@@ -228,9 +233,7 @@ Dla ~74 wag (`(6+1)*8 + (8+1)*2`) prosty algorytm genetyczny zbiega się szybcie
 | :--- | :--- | :--- |
 | **Populacja** | **~300-500** | Spadek FPS. Pętla `update()` jest synchroniczna. |
 | **Neurony (Hidden)** | **~30-50** | Przestrzeń poszukiwań rośnie kwadratowo ($O(N^2)$). Powyżej 50 neuronów prosty GA zaczyna "błądzić". |
-| **Złożoność labiryntu** | **Wysoka** | Raycasting jest tani. Algorytm radzi sobie dobrze. |
 
-**Wniosek:** Jeśli chcesz sieć 10x większą, musisz zmienić algorytm na **CMA-ES** (ewolucja strategii) lub przenieść symulację do **WebGL/Wasm**. W obecnej formie jest to idealne demo "na serwetce".
 
 
 ### Porównanie z innymi podejściami (złożoność / dopasowanie)
@@ -252,31 +255,6 @@ Dla ~74 wag (`(6+1)*8 + (8+1)*2`) prosty algorytm genetyczny zbiega się szybcie
   - niewymagający obliczania gradientów ani konstrukcji funkcji wartości.
 
 ---
-
-### Czy to jest optymalny model dla małej sieci?
-
-Dla tego typu problemu (mały labirynt 2D, kilkanaście neuronów):
-
-- **Tak, w praktyce jest to bardzo sensowny wybór:**
-  - implementacja jest prosta,
-  - łatwa wizualizacja i eksperymenty,
-  - brak potrzeby projektowania nagród pod RL.
-- Dla większych, bardziej złożonych zadań (ciągłe sterowanie, wysokowymiarowe sensory, obraz) takie proste GA + jednowarstwowy MLP zwykle:
-  - staje się **nieefektywne obliczeniowo** (wymagana znacznie większa populacja i więcej generacji),
-  - będzie przegrywać z metodami opartymi na gradientach lub zaawansowanymi ES.
-
----
-
-### Skalowalność (pamięć, skuteczność)
-
-**Pamięć:**
-
-- Parametry na jednego agenta ~ `6·H + H·2 + H + 2 ≈ 8H + H + 2 ≈ 9H` wag (rzędu setek wartości dla H=8).  
-- Łączna pamięć ~ `O(POP_SIZE · HIDDEN)`:
-  - Przy `POP_SIZE=100, HIDDEN=8` – śladowe zużycie.
-  - Można bez problemu dojść rzędu:
-    - `HIDDEN ~ 100–200`,
-    - `POP_SIZE ~ 10^3` (w JS w przeglądarce to już górna granica komfortu).
 
 **Czas / skuteczność:**
 
