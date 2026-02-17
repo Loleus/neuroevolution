@@ -189,7 +189,11 @@
          border-radius: var(--radius);
          padding: 14px;
      }
-
+    a {
+        color: #b6f0ff;
+        text-decoration: none;
+        font-weight: bold;
+    }
      #hist {
          margin-top: 9px;
          height: 96px;
@@ -249,4 +253,5 @@ h3 {
 }
 .right {
     width: 660px;
+    max-width: 100%;
 }

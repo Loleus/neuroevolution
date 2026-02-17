@@ -84,62 +84,83 @@
 
     <div id="left">
         <canvas id="cv" width="320" height="320"></canvas>
-        <p class="desc">
-            <b>Neurony</b> – liczba neuronów w warstwie ukrytej sieci<br>
-            <b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br>
-            <b>Elitaryzm</b> – ile najlepszych agentów przechodzi bez zmian do następnej generacji<br>
-            <b>Rozmiar turnieju</b> – liczba uczestników w każdym turnieju selekcji<br>
-            <b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju<br>
-        </p>
+        <div class="desc">
+            <ul>
+                <li><b>Neurony</b> – liczba neuronów w warstwie ukrytej sieci<br></li>
+                <li><b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br></li>
+                <li><b>Elitaryzm</b> – ile najlepszych agentów przechodzi bez zmian do następnej generacji<br></li>
+                <li><b>Rozmiar turnieju</b> – liczba uczestników w każdym turnieju selekcji<br></li>
+                <li><b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju<br></li>
+            </ul>
+        </div>
     </div>
     <div class="right desc">
         <h3>Sieć Neuronowa (Fenotyp)</h3>
-        <p>W projekcie używana jest prosta, w pełni połączona sieć feed‑forward:<br>
+        <p>W projekcie używana jest w pełni połączona sieć <a target="_blank" href="https://pl.wikipedia.org/wiki/Jednokierunkowa_sie%C4%87_neuronowa">feed‑forward.</a>
+            Jest to minimalny, jednowarstwowy MLP (<a target="_blank" href="https://pl.wikipedia.org/wiki/Perceptron_wielowarstwowy">perceptron wielowarstwowy</a>) bez pamięci (brak <a href="https://pl.wikipedia.org/wiki/D%C5%82uga_pami%C4%99%C4%87_kr%C3%B3tkotrwa%C5%82a" target="_blank">RNN/LSTM</a>, brak konwolucji)<br>
+            <ul>
+                <li>
+                    <b>Architektura: `6 → HIDDEN → 2`</b>
+                </li>
+                - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)<br>
+                - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej<br>
+                - 2 wyjścia: wektor ruchu `(dx, dy)` agenta<br>
+                <li>
+                    <b>Aktywacje:</b>
+                </li>
+                - warstwa ukryta: <a href="https://pl.wikipedia.org/wiki/ReLU" target="_blank">ReLU</a><br>
+                - wyjście: `tanh` (<a href="https://pl.wikipedia.org/wiki/Funkcje_hiperboliczne" target="_blank">tangens hiperboliczny</a> - ruch ograniczony do [-1, 1]) <br>
+                <li>
+                    <b>Uczenie:</b>
+                </li>
+                - brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie).<br>
+                <li>
+                    <b>Inicjalizacja:</b>
+                </li>
+                - losowa z normalnego rozkładu (<a href="https://en.wikipedia.org/wiki/Kaiming_He" target="_blank">He‑podobna</a>). Kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali <a href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>) i martwych neuronów, skalowana względem rozmiarów warstw.
+            </ul>
             
-            - **Architektura:** `6 → HIDDEN → 2`  
-              - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)  
-              - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej  
-              - 2 wyjścia: wektor ruchu `(dx, dy)` agenta
-            - **Aktywacje:**
-              - warstwa ukryta: ReLU
-              - wyjście: `tanh` (ruch ograniczony do [-1, 1])
-            - **Uczenie:** brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie) na wagach `W1, b1, W2, b2`.  
-            - **Inicjalizacja:** losowa z normalnego rozkładu (He‑podobna (`sqrt(2/n)`) – kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali BP) i martwych neuronów.), skalowana względem rozmiarów warstw.
-            
-            To jest minimalny, jednowarstwowy MLP bez pamięci (brak RNN/LSTM, brak konwolucji)
         </p>
 
         <h3>Algorytm Genetyczny (Optymalizator)</h3>
-        <p>
-            1. **Kodowanie osobnika:** wszystkie wagi i biasy sieci (`W1, b1, W2, b2`).
-            2. **Ocena (fitness):**
-               - głównie: postęp w kierunku celu (najlepsza i bieżąca minimalna odległość),
-               - bonusy: dotarcie do celu, szybkie dojście, przeżycie, mało kolizji, bliskość celu na końcu,
-               - fitness obcięty do ~10.
-            3. **Selekcja:**
-               - sortowanie populacji wg fitness,
-               - **elita:** `ELITE_COUNT` najlepszych przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),
-               - reszta: **turniej** (Tournament Selection) z parametrami `TOUR_SIZE`, `TOUR_NO_REPEAT`.
-            4. **Krzyżowanie (crossover):**
-               - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).
-            5. **Mutacja:**
-               - prawdopodobieństwo mutacji pojedynczej wagi: `MUT_RATE`,
-               - siła mutacji zależna od:
-                 - numeru generacji (maleje z czasem, ale nie do zera),
-                 - średniej wartości wag i biasów w warstwach (normalizacja),
-                 - współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).
-            6. **Dodatki:**
-               - statystyki generacji (średni/max fitness, σ, histogram),
-               - heurystyki ruchu i system „ostrzeżeń” przy kolizjach, ale to logika środowiska, nie GA.
-            
-            To jest klasyczny GA + tournament, bez selekcji ruletkowej, bez CMA‑ES, bez NEAT (brak ewolucji topologii).
-        </p>
+        <ul>
+            <li>
+                <b>Kodowanie osobnika:</b> wszystkie wagi i biasy sieci (`W1, b1, W2, b2`)<br>
+            </li>
+
+            <li>
+                <b>Ocena (fitness)</b><br>
+                - Dotarcie do celu: +10.0 + bonus za szybkość<br>
+                - Postęp w kierunku celu: nagroda za zmniejszenie odległości (najlepsza i aktualna)<br>
+                - Bonus za przeżycie: +0.3 jeśli agent żyje<br>
+                - Bonus za eksplorację: zachęta do ruchu w późniejszych krokach<br>
+                - Bonus za unikanie kolizji: zmniejsza się z każdym ostrzeżeniem<br>
+                - Bonus za bliskość celu w końcowej fazie: zachęta do „dokończenia” zadania<br>
+            </li>
+            <li>
+                <b>Selekcja:</b><br>
+                - sortowanie populacji wg fitness<br>
+                - elita: najlepszych przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),<br>
+                - reszta: turniej (Tournament Selection).<br>
+            </li>
+
+            <li>
+                <b>Krzyżowanie (crossover):</b><br>
+                - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).<br>
+            </li>
+            <li>
+                <b>Mutacja:</b><br>
+                - adaptacyjna Gaussa. Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na precyzyjny dostrój (fine-tuning).<br>
+                - zależna od współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).<br>
+                - zależna od numeru generacji (maleje z czasem, ale nie do zera)<br>
+            </li>
+            <li><b>Klasyczny GA + tournament</b>, bez selekcji ruletkowej, bez CMA‑ES, bez NEAT (brak ewolucji topologii).<br>
+            </li>
+            </ul>
         <div class="history">
           <h3>Co to?</h3>
-          <p class="desc">
             Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
             poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
-        </p>
         </div>
       </div>
     <script src="./index.js"></script>
