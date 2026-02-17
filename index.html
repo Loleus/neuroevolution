@@ -104,25 +104,32 @@
         <h3>Sieć Neuronowa (Fenotyp)</h3>
         <p>W projekcie używana jest sieć <a target="_blank"
                 href="https://pl.wikipedia.org/wiki/Jednokierunkowa_sie%C4%87_neuronowa">feed‑forward.</a>
-            Minimalny, jednowarstwowy MLP (<a target="_blank"
-                href="https://pl.wikipedia.org/wiki/Perceptron_wielowarstwowy">perceptron wielowarstwowy</a>) bez
+            Minimalny, jednowarstwowy <a target="_blank"
+                href="https://pl.wikipedia.org/wiki/Perceptron_wielowarstwowy">MLP</a> bez
             pamięci (brak <a href="https://pl.wikipedia.org/wiki/D%C5%82uga_pami%C4%99%C4%87_kr%C3%B3tkotrwa%C5%82a"
                 target="_blank">RNN/LSTM</a>, brak konwolucji)<br>
         <ul>
             <li>
-                <b>Architektura: (6 → HIDDEN → 2)</b> - 6 wejść: 4 kierunki  + znormalizowany wektor w kierunku celu (gx, gy) → `HIDDEN` (domyślnie 8) neuronów warstwy ukryte (max 64) → 2 wyjścia: wektor ruchu `(dx, dy)` agenta<br>
+                <b>Architektura: (6 → HIDDEN → 2)</b> - 6 wejść: 4 kierunki + znormalizowany wektor w kierunku celu (gx,
+                gy) → `HIDDEN` (domyślnie 8) neuronów warstwy ukryte (max 64) → 2 wyjścia: wektor ruchu `(dx, dy)`
+                agenta<br>
             </li>
             <li>
-                <b>Aktywacje:</b> warstwa ukryta: <a href="https://pl.wikipedia.org/wiki/ReLU" target="_blank">ReLU</a>, wyjście: `tanh` (<a href="https://pl.wikipedia.org/wiki/Funkcje_hiperboliczne" target="_blank">tangens
-                    hiperboliczny</a> - ruch ograniczony do [-1, 1]) <br>
+                <b>Aktywacje:</b> warstwa ukryta: <a href="https://pl.wikipedia.org/wiki/ReLU" target="_blank">ReLU</a>,
+                wyjście: <a href="https://pl.wikipedia.org/wiki/Funkcje_hiperboliczne" target="_blank">`tanh`</a> - ruch
+                ograniczony do [-1, 1] <br>
             </li>
             <li>
                 <b>Uczenie:</b> brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie).<br>
             </li>
             <li>
-                <b>Inicjalizacja:</b> losowa z normalnego rozkładu (<a href="https://en.wikipedia.org/wiki/Weight_initialization"
-                target="_blank">He‑podobna</a>). Klasyczna He jest pod <a
-                href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>: gradient ma sensowną skalę. Projekt używa He z mianownikiem fan-in + fan-out (w stylu Xavier/Glorot),  co działa jak dodatkowe „uśrednienie” skali w obu kierunkach przepływu sygnału, aby uniknąć zanikających gradientów (jak przy BP) i martwych neuronów. Skalowana względem rozmiarów warstw.<br>
+                <b>Inicjalizacja:</b> losowa z normalnego rozkładu (<a
+                    href="https://en.wikipedia.org/wiki/Weight_initialization" target="_blank">He‑podobna</a>).
+                Klasyczna He jest pod <a href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna"
+                    target="_blank">BP</a>: gradient ma sensowną skalę. Projekt używa He z mianownikiem fan-in + fan-out
+                (w stylu Xavier/Glorot), co działa jak dodatkowe „uśrednienie” skali w obu kierunkach przepływu sygnału,
+                aby uniknąć zanikających gradientów (jak przy BP) i martwych neuronów. Skalowana względem rozmiarów
+                warstw.<br>
             </li>
         </ul>
 
@@ -135,25 +142,33 @@
             </li>
 
             <li>
-                <b>Ocena (fitness):</b> dotarcie do celu (+10.0 + bonus za szybkość), postęp w kierunku celu (nagroda za zmniejszenie odległości = najlepsza i aktualna). Bonusy: za przeżycie (+0.3 jeśli agent żyje), za eksplorację (zachęta do ruchu w późniejszych krokach), za unikanie kolizji (zmniejsza się z każdym ostrzeżeniem), za bliskość celu w końcowej fazie (zachęta do
-                „dokończenia” zadania)<br>
+                <b>Ocena (fitness):</b> dotarcie do celu (+10.0 + bonus za szybkość), postęp w kierunku celu (nagroda za
+                zmniejszenie odległości = najlepsza i aktualna). Bonusy: za przeżycie (+0.3 jeśli agent żyje), za
+                eksplorację (zachęta do ruchu w późniejszych krokach), za unikanie kolizji (zmniejsza się z każdym
+                ostrzeżeniem), za bliskość celu w końcowej fazie (zachęta do "dokończenia” zadania)<br>
             </li>
             <li>
-                <b>Selekcja:</b> sortowanie populacji wg fitness, elita (ilu najlepszych agentów przechodzi wprost do następnej generacji - z opcjonalną bardzo małą
+                <b>Selekcja:</b> sortowanie populacji wg fitness, elita (ilu najlepszych agentów przechodzi wprost do
+                następnej generacji - z opcjonalną bardzo małą
                 mutacją przy wysokim fitness bez osiągnięcia celu), reszta - turniej (Tournament Selection).<br>
             </li>
 
             <li>
-                <b>Krzyżowanie (crossover):</b> proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).<br>
+                <b>Krzyżowanie (crossover):</b> proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje
+                wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).<br>
             </li>
             <li>
-                <b>Mutacja:</b> adaptacyjna <a href="https://pl.wikipedia.org/wiki/Rozk%C5%82ad_normalny" target="_blank">Gaussa.</a>
+                <b>Mutacja:</b> adaptacyjna <a href="https://pl.wikipedia.org/wiki/Rozk%C5%82ad_normalny"
+                    target="_blank">Gaussa.</a>
                 Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na
-                precyzyjny dostrój (fine-tuning). Zależna od współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko), oraz od numeru generacji (maleje z czasem, ale nie do zera)<br>
+                precyzyjny dostrój (fine-tuning). Zależna od współczynnika „stagnacji” (większa mutacja, gdy fitness
+                utknie nisko), oraz od numeru generacji (maleje z czasem, ale nie do zera)<br>
             </li>
             <li><b>Klasyczny GA + tournament</b>, bez CMA‑ES, bez NEAT (brak ewolucji topologii).<br>
             </li>
-            <li><b>Dodatki:</b> statystyki generacji (średni/max fitness, <a href="https://pl.wikipedia.org/wiki/Odchylenie_standardowe">odchylenie standardowe - σ</a>, histogram), heurystyki ruchu i system „ostrzeżeń” przy kolizjach.<br>
+            <li><b>Dodatki:</b> statystyki generacji (średni/max fitness, <a
+                    href="https://pl.wikipedia.org/wiki/Odchylenie_standardowe">odchylenie standardowe - σ</a>,
+                histogram), heurystyki ruchu i system „ostrzeżeń” przy kolizjach.<br>
             </li>
         </ul>
 
