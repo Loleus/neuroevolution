@@ -80,17 +80,11 @@
             <button id="restart">Restart</button>
             <button id="pause">Pauza</button>
         </div>
-
-        <p id="desc">
-            Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
-            poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
-        </p>
-
     </div>
 
     <div id="left">
         <canvas id="cv" width="320" height="320"></canvas>
-        <p id="desc">
+        <p class="desc">
             <b>Neurony</b> – liczba neuronów w warstwie ukrytej sieci<br>
             <b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br>
             <b>Elitaryzm</b> – ile najlepszych agentów przechodzi bez zmian do następnej generacji<br>
@@ -98,7 +92,56 @@
             <b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju<br>
         </p>
     </div>
+    <div class="right desc">
+        <h3>Sieć Neuronowa (Fenotyp)</h3>
+        <p>W projekcie używana jest prosta, w pełni połączona sieć feed‑forward:<br>
+            
+            - **Architektura:** `6 → HIDDEN → 2`  
+              - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)  
+              - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej  
+              - 2 wyjścia: wektor ruchu `(dx, dy)` agenta
+            - **Aktywacje:**
+              - warstwa ukryta: ReLU
+              - wyjście: `tanh` (ruch ograniczony do [-1, 1])
+            - **Uczenie:** brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie) na wagach `W1, b1, W2, b2`.  
+            - **Inicjalizacja:** losowa z normalnego rozkładu (He‑podobna (`sqrt(2/n)`) – kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali BP) i martwych neuronów.), skalowana względem rozmiarów warstw.
+            
+            To jest minimalny, jednowarstwowy MLP bez pamięci (brak RNN/LSTM, brak konwolucji)
+        </p>
 
+        <h3>Algorytm Genetyczny (Optymalizator)</h3>
+        <p>
+            1. **Kodowanie osobnika:** wszystkie wagi i biasy sieci (`W1, b1, W2, b2`).
+            2. **Ocena (fitness):**
+               - głównie: postęp w kierunku celu (najlepsza i bieżąca minimalna odległość),
+               - bonusy: dotarcie do celu, szybkie dojście, przeżycie, mało kolizji, bliskość celu na końcu,
+               - fitness obcięty do ~10.
+            3. **Selekcja:**
+               - sortowanie populacji wg fitness,
+               - **elita:** `ELITE_COUNT` najlepszych przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),
+               - reszta: **turniej** (Tournament Selection) z parametrami `TOUR_SIZE`, `TOUR_NO_REPEAT`.
+            4. **Krzyżowanie (crossover):**
+               - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).
+            5. **Mutacja:**
+               - prawdopodobieństwo mutacji pojedynczej wagi: `MUT_RATE`,
+               - siła mutacji zależna od:
+                 - numeru generacji (maleje z czasem, ale nie do zera),
+                 - średniej wartości wag i biasów w warstwach (normalizacja),
+                 - współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).
+            6. **Dodatki:**
+               - statystyki generacji (średni/max fitness, σ, histogram),
+               - heurystyki ruchu i system „ostrzeżeń” przy kolizjach, ale to logika środowiska, nie GA.
+            
+            To jest klasyczny GA + tournament, bez selekcji ruletkowej, bez CMA‑ES, bez NEAT (brak ewolucji topologii).
+        </p>
+        <div class="history">
+          <h3>Co to?</h3>
+          <p class="desc">
+            Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
+            poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
+        </p>
+        </div>
+      </div>
     <script src="./index.js"></script>
 </body>
 
