@@ -207,7 +207,7 @@ Klasyczny **Perceptron Wielowarstwowy (MLP)** o stałej topologii.
 *   **Inicjalizacja:** He Initialization (`sqrt(2/n)`) – kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali BP) i martwych neuronów.
 
 ### 2. Algorytm Genetyczny (Optymalizator)
-To nie jest zwykły GA. Zastosowłem kilka trikó:
+To nie jest zwykły GA. Zastosowłem kilka trików:
 
 | Operator | Metoda | Dlaczego taka? |
 | :--- | :--- | :--- |
