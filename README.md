@@ -101,8 +101,6 @@ Funkcja jest **wypukłą kombinacją** powyższych składników, co zapewnia sta
 - **W2/W1 > 1** – warstwa wyjściowa ma większe znaczenie (częste w późnych fazach ewolucji)
 - **W2/W1 < 1** – warstwa ukryta dominuje (wczesna faza, sieć uczy się abstrakcyjnych reprezentacji)
 
-**Przykład**: Jeśli W2/W1 = 1.5, oznacza to, że średnia wartość wag w warstwie wyjściowej jest 1.5× większa niż w warstwie ukrytej – sieć „podejmuje decyzje” głównie na podstawie ostatniej warstwy.
-
 ### 3. Odchylenie standardowe fitness (σ)
 
 Odchylenie standardowe fitness mierzy **zróżnicowanie przystosowania** w populacji:
@@ -196,7 +194,6 @@ gdzie suma obejmuje wszystkie wagi w danej warstwie. Używamy RMS zamiast proste
 
 ---
 
----
 
 ## 🧬 Model Algorytmu i Architektura
 
@@ -245,52 +242,6 @@ Dla ~74 wag (`(6+1)*8 + (8+1)*2`) prosty algorytm genetyczny zbiega się szybcie
 
 **Wniosek:** Jeśli chcesz sieć 10x większą, musisz zmienić algorytm na **CMA-ES** (ewolucja strategii) lub przenieść symulację do **WebGL/Wasm**. W obecnej formie jest to idealne demo "na serwetce".
 
-### Model sieci neuronowej
-
-W projekcie używana jest prosta, w pełni połączona sieć feed‑forward:
-
-- **Architektura:** `6 → HIDDEN → 2`  
-  - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)  
-  - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej  
-  - 2 wyjścia: wektor ruchu `(dx, dy)` agenta
-- **Aktywacje:**
-  - warstwa ukryta: ReLU
-  - wyjście: `tanh` (ruch ograniczony do [-1, 1])
-- **Uczenie:** brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie) na wagach `W1, b1, W2, b2`.  
-- **Inicjalizacja:** losowa z normalnego rozkładu (He‑podobna, skalowana względem rozmiarów warstw).
-
-To jest minimalny, jednowarstwowy MLP bez pamięci (brak RNN/LSTM, brak konwolucji).
-
----
-
-### Model algorytmu genetycznego
-
-Zastosowany jest klasyczny GA/tournament selection nad parametrami sieci:
-
-1. **Kodowanie osobnika:** wszystkie wagi i biasy sieci (`W1, b1, W2, b2`).
-2. **Ocena (fitness):**
-   - głównie: postęp w kierunku celu (najlepsza i bieżąca minimalna odległość),
-   - bonusy: dotarcie do celu, szybkie dojście, przeżycie, mało kolizji, bliskość celu na końcu,
-   - fitness obcięty do ~10.
-3. **Selekcja:**
-   - sortowanie populacji wg fitness,
-   - **elita:** `ELITE_COUNT` najlepszych przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),
-   - reszta: **turniej** (Tournament Selection) z parametrami `TOUR_SIZE`, `TOUR_NO_REPEAT`.
-4. **Krzyżowanie (crossover):**
-   - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).
-5. **Mutacja:**
-   - prawdopodobieństwo mutacji pojedynczej wagi: `MUT_RATE`,
-   - siła mutacji zależna od:
-     - numeru generacji (maleje z czasem, ale nie do zera),
-     - średniej wartości wag i biasów w warstwach (normalizacja),
-     - współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).
-6. **Dodatki:**
-   - statystyki generacji (średni/max fitness, σ, histogram),
-   - heurystyki ruchu i system „ostrzeżeń” przy kolizjach, ale to logika środowiska, nie GA.
-
-To jest klasyczny GA + tournament, bez selekcji ruletkowej, bez CMA‑ES, bez NEAT (brak ewolucji topologii).
-
----
 
 ### Porównanie z innymi podejściami (złożoność / dopasowanie)
 
