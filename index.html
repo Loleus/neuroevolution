@@ -90,36 +90,45 @@
                 <li><b>Mutacja</b> – prawdopodobieństwo mutacji pojedynczej wagi<br></li>
                 <li><b>Elitaryzm</b> – ile najlepszych agentów przechodzi bez zmian do następnej generacji<br></li>
                 <li><b>Rozmiar turnieju</b> – liczba uczestników w każdym turnieju selekcji<br></li>
-                <li><b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w turnieju<br></li>
+                <li><b>Bez powtórzeń</b> – checkbox zapobiegający wielokrotnemu udziałowi tego samego agenta w
+                    turnieju<br></li>
             </ul>
         </div>
     </div>
     <div class="right desc">
         <h3>Sieć Neuronowa (Fenotyp)</h3>
-        <p>W projekcie używana jest w pełni połączona sieć <a target="_blank" href="https://pl.wikipedia.org/wiki/Jednokierunkowa_sie%C4%87_neuronowa">feed‑forward.</a>
-            Jest to minimalny, jednowarstwowy MLP (<a target="_blank" href="https://pl.wikipedia.org/wiki/Perceptron_wielowarstwowy">perceptron wielowarstwowy</a>) bez pamięci (brak <a href="https://pl.wikipedia.org/wiki/D%C5%82uga_pami%C4%99%C4%87_kr%C3%B3tkotrwa%C5%82a" target="_blank">RNN/LSTM</a>, brak konwolucji)<br>
-            <ul>
-                <li>
-                    <b>Architektura: `6 → HIDDEN → 2`</b>
-                </li>
-                - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)<br>
-                - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej<br>
-                - 2 wyjścia: wektor ruchu `(dx, dy)` agenta<br>
-                <li>
-                    <b>Aktywacje:</b>
-                </li>
-                - warstwa ukryta: <a href="https://pl.wikipedia.org/wiki/ReLU" target="_blank">ReLU</a><br>
-                - wyjście: `tanh` (<a href="https://pl.wikipedia.org/wiki/Funkcje_hiperboliczne" target="_blank">tangens hiperboliczny</a> - ruch ograniczony do [-1, 1]) <br>
-                <li>
-                    <b>Uczenie:</b>
-                </li>
-                - brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie).<br>
-                <li>
-                    <b>Inicjalizacja:</b>
-                </li>
-                - losowa z normalnego rozkładu (<a href="https://en.wikipedia.org/wiki/Kaiming_He" target="_blank">He‑podobna</a>). Kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali <a href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>) i martwych neuronów, skalowana względem rozmiarów warstw.
-            </ul>
-            
+        <p>W projekcie używana jest w pełni połączona sieć <a target="_blank"
+                href="https://pl.wikipedia.org/wiki/Jednokierunkowa_sie%C4%87_neuronowa">feed‑forward.</a>
+            Jest to minimalny, jednowarstwowy MLP (<a target="_blank"
+                href="https://pl.wikipedia.org/wiki/Perceptron_wielowarstwowy">perceptron wielowarstwowy</a>) bez
+            pamięci (brak <a href="https://pl.wikipedia.org/wiki/D%C5%82uga_pami%C4%99%C4%87_kr%C3%B3tkotrwa%C5%82a"
+                target="_blank">RNN/LSTM</a>, brak konwolucji)<br>
+        <ul>
+            <li>
+                <b>Architektura: `6 → HIDDEN → 2`</b>
+            </li>
+            - 6 wejść: 4 odległości do ścian (promienie) + znormalizowany wektor w kierunku celu (gx, gy)<br>
+            - `HIDDEN` (domyślnie 8) neuronów warstwy ukrytej<br>
+            - 2 wyjścia: wektor ruchu `(dx, dy)` agenta<br>
+            <li>
+                <b>Aktywacje:</b>
+            </li>
+            - warstwa ukryta: <a href="https://pl.wikipedia.org/wiki/ReLU" target="_blank">ReLU</a><br>
+            - wyjście: `tanh` (<a href="https://pl.wikipedia.org/wiki/Funkcje_hiperboliczne" target="_blank">tangens
+                hiperboliczny</a> - ruch ograniczony do [-1, 1]) <br>
+            <li>
+                <b>Uczenie:</b>
+            </li>
+            - brak gradientów, wyłącznie neuroewolucja (mutacje + krzyżowanie).<br>
+            <li>
+                <b>Inicjalizacja:</b>
+            </li>
+            - losowa z normalnego rozkładu (<a href="https://en.wikipedia.org/wiki/Kaiming_He"
+                target="_blank">He‑podobna</a>). Kluczowe, by uniknąć zanikających gradientów (gdybyśmy używali <a
+                href="https://pl.wikipedia.org/wiki/Propagacja_wsteczna" target="_blank">BP</a>) i martwych neuronów,
+            skalowana względem rozmiarów warstw.
+        </ul>
+
         </p>
 
         <h3>Algorytm Genetyczny (Optymalizator)</h3>
@@ -132,34 +141,44 @@
                 <b>Ocena (fitness)</b><br>
                 - dotarcie do celu: +10.0 + bonus za szybkość<br>
                 - postęp w kierunku celu: nagroda za zmniejszenie odległości (najlepsza i aktualna)<br>
-                - bonusy: za przeżycie: +0.3 jeśli agent żyje, za eksplorację: zachęta do ruchu w późniejszych krokach, za unikanie kolizji: zmniejsza się z każdym ostrzeżeniem, za bliskość celu w końcowej fazie: zachęta do „dokończenia” zadania<br>
+                - bonusy: za przeżycie: +0.3 jeśli agent żyje, za eksplorację: zachęta do ruchu w późniejszych krokach,
+                za unikanie kolizji: zmniejsza się z każdym ostrzeżeniem, za bliskość celu w końcowej fazie: zachęta do
+                „dokończenia” zadania<br>
             </li>
             <li>
                 <b>Selekcja:</b><br>
                 - sortowanie populacji wg fitness<br>
-                - elita: ilu najlepszych agentów przechodzi wprost do następnej generacji (z opcjonalną bardzo małą mutacją przy wysokim fitness bez osiągnięcia celu),<br>
+                - elita: ilu najlepszych agentów przechodzi wprost do następnej generacji (z opcjonalną bardzo małą
+                mutacją przy wysokim fitness bez osiągnięcia celu),<br>
                 - reszta: turniej (Tournament Selection).<br>
             </li>
 
             <li>
                 <b>Krzyżowanie (crossover):</b><br>
-                - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego rodzica (prawdopodobieństwo 0.5).<br>
+                - proste jednogenowe mieszanie: dla każdej wagi/biasu dziecko dostaje wartość od losowo wybranego
+                rodzica (prawdopodobieństwo 0.5).<br>
             </li>
             <li>
                 <b>Mutacja:</b><br>
-                - adaptacyjna <a href="https://pl.wikipedia.org/wiki/Rozk%C5%82ad_normalny" target="_blank">Gaussa.</a> Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na precyzyjny dostrój (fine-tuning).<br>
+                - adaptacyjna <a href="https://pl.wikipedia.org/wiki/Rozk%C5%82ad_normalny" target="_blank">Gaussa.</a>
+                Siła mutacji skaluje się do średniej wartości wag w warstwie. Zapobiega "eksplozji" wag i pozwala na
+                precyzyjny dostrój (fine-tuning).<br>
                 - zależna od współczynnika „stagnacji” (większa mutacja, gdy fitness utknie nisko).<br>
                 - zależna od numeru generacji (maleje z czasem, ale nie do zera)<br>
             </li>
             <li><b>Klasyczny GA + tournament</b>, bez CMA‑ES, bez NEAT (brak ewolucji topologii).<br>
             </li>
-            </ul>
+            <li><b>Dodatki:</b><br>
+                - statystyki generacji (średni/max fitness, <a href="https://pl.wikipedia.org/wiki/Odchylenie_standardowe">odchylenie standardowe - σ</a>, histogram),<br>
+                - heurystyki ruchu i system „ostrzeżeń” przy kolizjach,.<br>
+            </li>
+        </ul>
         <div class="history">
-          <h3>Co to?</h3>
+            <h3>Co to?</h3>
             Algorytm genetyczny optymalizuje wagi sieci neuronowej, która steruje agentem
             poruszającym się w labiryncie. Celem jest dotarcie do wyjścia w jak najmniejszej liczbie kroków.
         </div>
-      </div>
+    </div>
     <script src="./index.js"></script>
 </body>
 
