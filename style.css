@@ -50,10 +50,10 @@
          justify-content: flex-start;
          min-width: 320px;
          width: 320px;
-         padding: 14px;
+         padding: 0 14px 14px;
          overflow: auto;
-         line-height: 1.5;
-         max-height: calc(100vh - 28px);
+         line-height: 1.4;
+         gap: 10px;
      }
 
      #controls h3 {
@@ -70,7 +70,7 @@
          display: flex;
          width: 100%;
          justify-content: space-around;
-         margin: 8px 0 0;
+         /* margin: 8px 0 0; */
      }
 
      .hist .pill {
@@ -107,7 +107,6 @@
      .params {
          background: var(--color-bg-panel);
          padding: 5px 14px 10px;
-         margin: 5px 0 10px;
          border: 1px solid var(--color-border);
          border-radius: var(--radius);
      }
@@ -163,8 +162,7 @@
      }
 
      .info {
-         margin-top: 5px;
-         padding: 10px;
+         padding: 0 10px;
          color: var(--color-text-gray);
          text-align: justify;
          line-height: 1.4;
@@ -189,6 +187,7 @@
          line-height: 1.5;
          max-height: calc(100vh - 28px);
          border-radius: var(--radius);
+         gap: 10px;
      }
 
      a {
@@ -198,11 +197,10 @@
      }
 
      #hist {
-         margin-top: 9px;
          height: 96px;
-         padding: 0 5px;
-         border: 1px solid var(--color-border);
-         border-radius: var(--radius);
+         /* padding: 0 5px; */
+         /* border: 1px solid var(--color-border);
+         border-radius: var(--radius); */
          box-shadow: var(--shadow-medium);
      }
 
@@ -240,11 +238,6 @@
          font-weight: 800;
          text-align: center;
          font-size: 1.7em;
-     }
-
-     h3 {
-         margin-bottom: 8px;
-         font-size: 15px;
      }
 
      .desc ul,
