@@ -82,6 +82,7 @@ label {
     font-size: 27px;
     font-weight: 700;
     text-shadow: 0 0 var(--shadow-big-blur) var(--color-border);
+    margin-top: 12px;
 }
 
 /* === STATYSTYKI === */
