@@ -38,7 +38,8 @@ body {
     line-height: 1.4;
 }
 
-h2, h3 {
+h2,
+h3 {
     color: var(--color-text-main);
     text-shadow: 0 0 var(--shadow-big-blur) var(--color-border);
 }
@@ -89,13 +90,16 @@ label {
 #hist {
     height: 96px;
     box-shadow: 0 0 12px var(--color-shadow);
+    padding: 0 5px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: #0b192b;
 }
 
 .hist {
     display: flex;
     width: 100%;
     justify-content: space-around;
-    margin: 5px 0 0;
 }
 
 .hist .pill {
@@ -250,6 +254,7 @@ button:hover {
         width: 100vw;
         height: 100vw;
     }
+
     #left {
         width: 100vw;
         max-width: 720px;
