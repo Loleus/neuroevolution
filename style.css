@@ -212,6 +212,7 @@ button:hover {
 }
 
 #left {
+    padding-top: 8px;
     overflow: auto;
     display: flex;
     min-width: 320px;
@@ -235,6 +236,8 @@ button:hover {
         flex-direction: column;
         align-items: center;
         width: 100%;
+        padding: 0;
+        margin: 0;
     }
 
     #controls {
@@ -245,5 +248,10 @@ button:hover {
     #cv {
         width: 100vw;
         height: 100vw;
+    }
+    #left {
+        width: 100vw;
+        max-width: 720px;
+        max-height: none;
     }
 }
