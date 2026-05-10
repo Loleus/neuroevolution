@@ -17,14 +17,24 @@ const DIAGONAL = Math.hypot(W, H);
 // PARAMETRY NEUROEWOLUCJI
 // ═══════════════════════════════════════════════════════════════
 const POP_SIZE = 100;
-let HIDDEN = 8;
-let MUT_RATE = 0.1;
-let ELITE_COUNT = 3;
-let TOUR_SIZE = 20  ;
-let TOUR_NO_REPEAT = false;
+
+/** Domyślne wartości parametrów — źródło prawdy w skrypcie (HTML bez value na range). */
+const DEFAULT_HIDDEN = 8;
+const DEFAULT_MUT_RATE_PCT = 10;
+const DEFAULT_ELITE = 3;
+const DEFAULT_TOUR_SIZE = 20;
+/** Suwak prędkości 5–20 → SPEED = wartość / 10 */
+const DEFAULT_SPEED_SLIDER = 10;
+const DEFAULT_TOUR_NO_REPEAT = false;
+
+let HIDDEN = DEFAULT_HIDDEN;
+let MUT_RATE = DEFAULT_MUT_RATE_PCT / 100;
+let ELITE_COUNT = DEFAULT_ELITE;
+let TOUR_SIZE = DEFAULT_TOUR_SIZE;
+let TOUR_NO_REPEAT = DEFAULT_TOUR_NO_REPEAT;
 
 const STEP_LIMIT = 600;
-let SPEED = 1.0;
+let SPEED = DEFAULT_SPEED_SLIDER / 10;
 
 // ═══════════════════════════════════════════════════════════════
 // NOWE STAŁE - SYSTEM OSTRZEŻEŃ I ŚLEDZENIA
@@ -71,12 +81,35 @@ const hctx = histCanvas ? histCanvas.getContext('2d') : null;
 
 popEl.textContent = POP_SIZE;
 
-// Ustaw wartość prędkości zgodnie z początkowym SPEED (1.0 -> 10 na suwaku)
-if (speedEl && speedValEl) {
-    const initialSlider = 10; // 10 na suwaku odpowiada SPEED = 1.0
-    speedEl.value = String(initialSlider);
-    speedValEl.textContent = initialSlider.toFixed(1);
+function applyParamsToUI() {
+    if (hiddenEl && hiddenValEl) {
+        hiddenEl.value = String(HIDDEN);
+        hiddenValEl.textContent = String(HIDDEN);
+    }
+    if (mutRateEl && mutRateValEl) {
+        const pct = Math.round(MUT_RATE * 100);
+        mutRateEl.value = String(pct);
+        mutRateValEl.textContent = pct + '%';
+    }
+    if (eliteEl && eliteValEl) {
+        eliteEl.value = String(ELITE_COUNT);
+        eliteValEl.textContent = String(ELITE_COUNT);
+    }
+    if (tourSizeEl && tourSizeValEl) {
+        tourSizeEl.value = String(TOUR_SIZE);
+        tourSizeValEl.textContent = String(TOUR_SIZE);
+    }
+    if (speedEl && speedValEl) {
+        const sliderVal = Math.round(SPEED * 10);
+        speedEl.value = String(sliderVal);
+        speedValEl.textContent = Number(speedEl.value).toFixed(1);
+    }
+    if (tourNoRepeatEl) {
+        tourNoRepeatEl.checked = TOUR_NO_REPEAT;
+    }
 }
+
+applyParamsToUI();
 
 // ═══════════════════════════════════════════════════════════════
 // HANDLERY UI
@@ -108,8 +141,8 @@ tourNoRepeatEl.onchange = () => {
 
 if (speedEl) {
     speedEl.oninput = () => {
-        const sliderVal = +speedEl.value;          // zakres 5–10
-        SPEED = sliderVal / 10;                    // 5 -> 0.5, 10 -> 1.0
+        const sliderVal = +speedEl.value;          // zakres 5–20
+        SPEED = sliderVal / 10;                    // np. 10 → SPEED 1.0
         if (speedValEl) {
             speedValEl.textContent = sliderVal.toFixed(1);
         }
