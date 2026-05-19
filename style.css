@@ -83,7 +83,7 @@ label {
     font-size: 27px;
     font-weight: 700;
     text-shadow: 0 0 var(--shadow-big-blur) var(--color-border);
-    margin-top: 12px;
+    margin: 6px 0;
 }
 
 /* === STATYSTYKI === */
@@ -104,7 +104,7 @@ label {
 
 .hist .pill {
     width: 32%;
-    padding: 3px 4px 6px;
+    padding: 6px 0px 8px;
     text-align: center;
     background: var(--color-bg-panel);
     text-shadow: 1px 1px 2px var(--color-shadow);
@@ -135,7 +135,7 @@ label {
 /* === PARAMETRY === */
 .params {
     background: var(--color-bg-panel);
-    padding: 5px 14px 10px;
+    padding: 10px 14px 18px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
 }
@@ -144,7 +144,7 @@ label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 4px 0 4px;
+    margin: 8px 0;
 }
 
 input[type="range"] {
