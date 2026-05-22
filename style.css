@@ -234,7 +234,6 @@ button:hover {
     flex-direction: column;
     justify-content: flex-start;
     line-height: 1.5;
-    max-height: calc(100vh - 28px);
     border-radius: var(--radius);
     gap: 10px;
 }
