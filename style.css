@@ -109,7 +109,7 @@ label {
     width: 32%;
     padding: 6px 0px 8px;
     text-align: center;
-    background: var(--color-bg-panel);
+
     text-shadow: 1px 1px 2px var(--color-shadow);
     box-shadow: none;
     border: 1px solid var(--color-border);
@@ -183,13 +183,19 @@ button:hover {
 /* === SEKCJE TEKSTOWE (.desc, .info, .history) === */
 .desc,
 .info {
-    padding: 0 10px;
+    padding: 10px 10px 5px 10px;
     color: var(--color-text-gray);
     text-align: justify;
     line-height: 1.4;
     width: 100%;
+    background: var(--color-bg-panel);
+        border: 1px solid var(--color-border);
+    border-radius: var(--radius);   
 }
-
+.info {
+    padding-left: 20px;
+    padding-bottom: 10px;
+}
 .desc h3 {
     font-size: 1.3em;
     margin: 0px 0 6px;
@@ -209,6 +215,7 @@ button:hover {
 .history {
     font-size: 12px;
     margin-top: 6px;
+    text-align: justify;
 }
 
 /* === CANVAS I LAYOUT PRAWY === */
@@ -220,10 +227,9 @@ button:hover {
 }
 
 #left {
-    padding-top: 8px;
+    padding: 0 0 0 8px;
     overflow: auto;
     display: flex;
-    min-width: 320px;
     width: 320px;
     flex-direction: column;
     justify-content: flex-start;
