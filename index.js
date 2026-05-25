@@ -37,7 +37,7 @@ const STEP_LIMIT = 600;
 let SPEED = DEFAULT_SPEED_SLIDER / 10;
 
 // ═══════════════════════════════════════════════════════════════
-// NOWE STAŁE - SYSTEM OSTRZEŻEŃ I ŚLEDZENIA
+// STAŁE - SYSTEM OSTRZEŻEŃ I ŚLEDZENIA
 // ═══════════════════════════════════════════════════════════════
 const MAX_WARNINGS = 3;
 const GRACE_PERIOD = 50;
