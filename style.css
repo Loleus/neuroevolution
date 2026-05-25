@@ -231,7 +231,7 @@ button:hover {
 }
 
 #left {
-    padding: 0 0 0 8px;
+    padding: 0 10px;
     overflow: auto;
     display: flex;
     width: 320px;
@@ -263,8 +263,7 @@ button:hover {
     }
 
     #cv {
-        width: 100vw;
-        height: 100vw;
+        width: 100%;
     }
 
     #left {
